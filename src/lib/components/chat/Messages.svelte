@@ -68,7 +68,7 @@
 				langDiv.style.fontSize = "0.75rem";
 
 				let button = document.createElement("button");
-				button.textContent = "Copy Code";
+				button.textContent = "คัดลอก";
 				button.style.background = "none";
 				button.style.fontSize = "0.75rem";
 				button.style.border = "none";
@@ -91,10 +91,10 @@
 			await navigator.clipboard.writeText(text);
 
 			// visual feedback that task is completed
-			button.innerText = "Copied!";
+			button.innerText = "คัดลอกแล้ว";
 
 			setTimeout(() => {
-				button.innerText = "Copy Code";
+				button.innerText = "คัดลอก";
 			}, 1000);
 		}
 	};
