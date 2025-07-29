@@ -10,8 +10,6 @@
 
 	// Models
 	let deleteModelTag = "";
-	let digest = "";
-	let pullProgress = null;
 
 	const deleteModelHandler = async () => {
 		const res = await fetch(`${OLLAMA_API_BASE_URL}/delete`, {
@@ -128,22 +126,6 @@
 								target="_blank">คลิกที่นี่</a
 							>
 						</div>
-						{#if pullProgress !== null}
-							<div class="mt-2">
-								<div class=" mb-2 text-xs">pull progress</div>
-								<div class="w-full rounded-full dark:bg-gray-800">
-									<div
-										class="dark:bg-gray-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-										style="width: {Math.max(15, pullProgress ?? 0)}%"
-									>
-										{pullProgress ?? 0}%
-									</div>
-								</div>
-								<div class="mt-1 text-xs dark:text-gray-500" style="font-size: 0.5rem;">
-									{digest}
-								</div>
-							</div>
-						{/if}
 					</div>
 					<hr class=" dark:border-gray-700" />
 
