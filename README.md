@@ -13,23 +13,28 @@ Ollama Web UI is a modern, responsive web application designed to provide an int
 ## Setup Instructions
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/sitthichokpaugchan/ollama-webui.git
    cd ollama-webui
    ```
 
 2. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 3. **Run the Development Server**:
+
    ```bash
    npm run dev
    ```
+
    The application will be available at `http://localhost:3000`.
 
 4. **Build for Production**:
+
    ```bash
    npm run build
    ```
