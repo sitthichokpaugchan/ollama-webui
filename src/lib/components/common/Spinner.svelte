@@ -3,18 +3,16 @@
 	 * A simple spinner component.
 	 *
 	 * @param className - The CSS class to apply to the outer div.
-	 * @param theme - The theme of the spinner. Can be "blue", "white", or "black".
+	 * @param theme - The theme of the spinner. Can be "white", or "black".
 	 */
 	export let className: string = "text-white";
-	export let theme: "blue" | "white" | "black" = "white";
+	export let theme: "white" | "black" = "white";
 </script>
 
 <div class="flex justify-center text-center {className}">
 	<!-- Spinner from https://tailwindui.com/components/application-ui/loading-animations#component-7e7f7d03 -->
 	<svg
-		class="animate-spin -ml-1 mr-3 h-5 w-5 {theme === 'blue'
-			? 'text-sky-600'
-			: theme === 'white'
+		class="animate-spin -ml-1 mr-3 h-5 w-5 {theme === 'white'
 			? 'text-white'
 			: 'text-gray-600'} "
 		xmlns="http://www.w3.org/2000/svg"

@@ -264,7 +264,7 @@
 				}
 
 				await $db.updateChatById(_chatId, {
-					title: title === '' ? 'แชทใหม่' : title,
+					title: title === '' ? 'ไม่มีชื่อแชท' : title,
 					models: selectedModels,
 					messages: messages,
 					history: history
@@ -335,7 +335,7 @@
 			if (messages.length == 1) {
 				await $db.createNewChat({
 					id: _chatId,
-					title: 'แชทใหม่',
+					title: 'ไม่มีชื่อแชท',
 					models: selectedModels,
 					messages: messages,
 					history: history
@@ -401,7 +401,7 @@
 				});
 
 			if (res) {
-				await setChatTitle(_chatId, res.response === '' ? 'แชทใหม่' : res.response);
+				await setChatTitle(_chatId, res.response === '' ? 'ไม่มีชื่อแชท' : res.response);
 			}
 		} else {
 			await setChatTitle(_chatId, `${userPrompt}`);
