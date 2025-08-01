@@ -1,0 +1,32 @@
+{
+  "theme": "Default",
+  "selectedAuthType": "oauth-personal",
+  "mcp": {
+    "servers": [
+      {
+        "name": "Filesystem",
+        "command": "npx -y @modelcontextprotocol/server-filesystem"
+      },
+      {
+        "name": "Sequential Thinking",
+        "command": "npx -y @modelcontextprotocol/server-sequential-thinking"
+      },
+      {
+        "name": "Fetch",
+        "command": "npx -y @modelcontextprotocol/server-fetch"
+      },
+      {
+        "name": "Memory",
+        "command": "npx -y @modelcontextprotocol/server-memory"
+      },
+      {
+        "name": "Time",
+        "command": "uvx mcp-server-time"
+      },
+      {
+        "name": "Everything",
+        "command": "npx -y @modelcontextprotocol/server-everything"
+      }
+    ]
+  }
+}
