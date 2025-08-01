@@ -130,8 +130,8 @@
 							<div
 								class=" text-left self-center overflow-hidden {chat.id ===
 								$chatId
-									? 'w-[120px]'
-									: 'w-[180px]'} "
+									? 'w-[160px]'
+									: 'w-[220px]'} "
 							>
 								{#if chatTitleEditId === chat.id}
 									<input
@@ -157,7 +157,7 @@
 											chatTitle = "";
 										}}
 									>
-										/
+										✓
 									</button><span />
 									<button
 										class=" self-center hover:text-white transition"
@@ -166,7 +166,7 @@
 											chatTitle = "";
 										}}
 									>
-										X
+										✕
 									</button>
 								</div>
 							{:else if chatDeleteId === chat.id}
@@ -177,7 +177,7 @@
 											deleteChat(chat.id);
 										}}
 									>
-										/
+										✓
 									</button><span />
 									<button
 										class=" self-center hover:text-white transition"
@@ -185,7 +185,7 @@
 											chatDeleteId = null;
 										}}
 									>
-										X
+										✕
 									</button>
 								</div>
 							{:else}
