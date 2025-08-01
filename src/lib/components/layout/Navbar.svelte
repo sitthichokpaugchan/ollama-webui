@@ -28,7 +28,9 @@
 				</button>
 			</div>
 			<!-- Display the title of the application -->
-			<div class="flex-1 self-center font-medium text-ellipsis whitespace-nowrap overflow-hidden">
+			<div
+				class="flex-1 self-center font-medium text-ellipsis whitespace-nowrap overflow-hidden"
+			>
 				{title != "" ? title : "Ollama Web UI"}
 			</div>
 		</div>

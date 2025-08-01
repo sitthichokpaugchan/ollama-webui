@@ -10,11 +10,11 @@
 		const res = await fetch(`${OLLAMA_API_BASE_URL}/delete`, {
 			method: "DELETE",
 			headers: {
-				"Content-Type": "text/event-stream"
+				"Content-Type": "text/event-stream",
 			},
 			body: JSON.stringify({
-				name: deleteModelTag
-			})
+				name: deleteModelTag,
+			}),
 		});
 		const reader = res.body
 			.pipeThrough(new TextDecoderStream())
@@ -55,8 +55,8 @@
 			method: "GET",
 			headers: {
 				Accept: "application/json",
-				"Content-Type": "application/json"
-			}
+				"Content-Type": "application/json",
+			},
 		})
 			.then(async (res) => {
 				if (!res.ok) throw await res.json();
@@ -95,8 +95,12 @@
 			<div class="flex-1 md:min-h-[340px]">
 				<div class="flex flex-col space-y-3 text-sm mb-10">
 					<div>
-						<div class="mb-2.5 text-sm font-medium">นำเข้าโมเดล</div>
-						<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+						<div class="mb-2.5 text-sm font-medium">
+							นำเข้าโมเดล
+						</div>
+						<div
+							class="mt-2 text-xs text-gray-400 dark:text-gray-500"
+						>
 							เพื่อเข้าถึงชื่อโมเดลที่มีให้ดาวน์โหลด
 							<a
 								class="text-gray-500 dark:text-gray-300 font-medium"
@@ -118,11 +122,22 @@
 									placeholder="เลือกโมเดล"
 								>
 									{#if !deleteModelTag}
-										<option value="" disabled selected>เลือกโมเดล</option>
+										<option value="" disabled selected
+											>เลือกโมเดล</option
+										>
 									{/if}
 									{#each $models.filter((m) => m.size != null) as model}
-										<option value={model.name} class="bg-gray-100 dark:bg-gray-700">
-											{model.name + " (" + (model.size / 1024 ** 3).toFixed(1) + " GB)"}
+										<option
+											value={model.name}
+											class="bg-gray-100 dark:bg-gray-700"
+										>
+											{model.name +
+												" (" +
+												(
+													model.size /
+													1024 ** 3
+												).toFixed(1) +
+												" GB)"}
 										</option>
 									{/each}
 								</select>

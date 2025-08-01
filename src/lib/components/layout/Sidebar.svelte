@@ -47,7 +47,7 @@
 	 */
 	const editChatTitle = async (id, _title) => {
 		await $db.updateChatById(id, {
-			title: _title
+			title: _title,
 		});
 		title = _title;
 	};
@@ -80,19 +80,13 @@
 				}}
 			>
 				<div class="flex self-center">
-					
-
 					<div class=" self-center font-medium text-sm">แชทใหม่</div>
 				</div>
-
-				
 			</button>
 		</div>
 
 		<div class="px-2.5 mt-1 mb-2 flex justify-center space-x-2">
 			<div class="flex w-full">
-				
-
 				<input
 					class="w-full rounded-r py-1.5 pl-2.5 pr-4 text-sm text-gray-300 bg-gray-900 outline-none"
 					placeholder="ค้นหา"
@@ -133,14 +127,17 @@
 						}}
 					>
 						<div class=" flex self-center flex-1">
-							
 							<div
-								class=" text-left self-center overflow-hidden {chat.id === $chatId
+								class=" text-left self-center overflow-hidden {chat.id ===
+								$chatId
 									? 'w-[120px]'
 									: 'w-[180px]'} "
 							>
 								{#if chatTitleEditId === chat.id}
-									<input bind:value={chatTitle} class=" bg-transparent w-full" />
+									<input
+										bind:value={chatTitle}
+										class=" bg-transparent w-full"
+									/>
 								{:else}
 									{chat.title}
 								{/if}
@@ -161,7 +158,7 @@
 										}}
 									>
 										/
-									</button><span></span>
+									</button><span />
 									<button
 										class=" self-center hover:text-white transition"
 										on:click={() => {
@@ -181,14 +178,14 @@
 										}}
 									>
 										/
-									</button><span></span>
+									</button><span />
 									<button
 										class=" self-center hover:text-white transition"
 										on:click={() => {
 											chatDeleteId = null;
 										}}
 									>
-										 X
+										X
 									</button>
 								</div>
 							{:else}
@@ -201,7 +198,7 @@
 										}}
 									>
 										แก้
-									</button><span></span>
+									</button><span />
 									<button
 										class=" self-center hover:text-white transition"
 										on:click={() => {
