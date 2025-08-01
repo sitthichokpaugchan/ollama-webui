@@ -73,7 +73,6 @@
       <div class="flex justify-center mb-4">
         <button
           class="bg-white border border-gray-100 dark:bg-white/20 dark:border-none p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm"
-          aria-label={UI_STRINGS.scrollToBottom}
           on:click={() => {
             dispatch("updateAutoScroll", true);
             // Do not mutate prop directly
@@ -84,7 +83,7 @@
             });
           }}
         >
-          \/
+          {UI_STRINGS.scrollToBottom}
         </button>
       </div>
     {/if}
