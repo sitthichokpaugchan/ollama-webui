@@ -335,7 +335,7 @@
 											/>
 											<div class="mt-2 mb-1 flex justify-center space-x-2 text-sm font-medium">
 												<button
-													class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg transition"
+													class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 dark:bg-blue-500 dark:text-white dark:hover:bg-blue-700 rounded-lg transition"
 													on:click={() => {
 														confirmEditMessage(message.id);
 													}}
@@ -424,7 +424,7 @@
 										<div class="w-full">
 											{#if message?.error === true}
 												<div
-													class="flex mt-2 mb-4 space-x-2 border border-red-800 bg-red-800/30 font-medium rounded-lg p-4"
+													class="flex mt-2 mb-4 space-x-2 border border-red-500 bg-red-500/30 font-medium rounded-lg p-4"
 												>
 													<span class="self-center">!</span>
 													<div class="self-center">{message.content}</div>

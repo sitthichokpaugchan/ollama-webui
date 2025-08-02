@@ -20,14 +20,7 @@
 		viewBox="0 0 24 24"
 	>
 		<!-- The outer circle -->
-		<circle
-			class="opacity-25"
-			cx="12"
-			cy="12"
-			r="10"
-			stroke="currentColor"
-			stroke-width="4"
-		/>
+		<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
 		<!-- The inner circle -->
 		<path
 			class="opacity-75"

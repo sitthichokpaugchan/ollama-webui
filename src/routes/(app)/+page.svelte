@@ -22,23 +22,10 @@
 	let title = "";
 	let prompt = "";
 
-	let messages: ChatMessage[] = [];
-	let history: { messages: any; currentId: string | null } = {
+	let messages = [];
+	let history = {
 		messages: {},
-		currentId: null,
-	};
-
-	type ChatMessage = {
-		id: string;
-		parentId: string | null;
-		childrenIds: string[];
-		role: "user" | "assistant";
-		content: string;
-		model?: string;
-		done?: boolean;
-		context?: any;
-		info?: any;
-		error?: boolean;
+		currentId: null
 	};
 
 	$: if (history.currentId !== null) {
@@ -48,9 +35,7 @@
 		while (currentMessage !== null) {
 			_messages.unshift({ ...currentMessage });
 			currentMessage =
-				currentMessage.parentId !== null
-					? history.messages[currentMessage.parentId]
-					: null;
+				currentMessage.parentId !== null ? history.messages[currentMessage.parentId] : null;
 		}
 		messages = _messages;
 	} else {
@@ -78,7 +63,7 @@
 		messages = [];
 		history = {
 			messages: {},
-			currentId: null,
+			currentId: null
 		};
 		selectedModels = $page.url.searchParams.get("models")
 			? $page.url.searchParams.get("models")?.split(",")
@@ -87,13 +72,13 @@
 		let _settings = JSON.parse(localStorage.getItem("settings") ?? "{}");
 		console.log(_settings);
 		settings.set({
-			..._settings,
+			..._settings
 		});
 	};
 
-	const copyToClipboard = (text: string) => {
+	const copyToClipboard = (text) => {
 		if (!navigator.clipboard) {
-			const textArea = document.createElement("textarea");
+			var textArea = document.createElement("textarea");
 			textArea.value = text;
 
 			// Avoid scrolling to bottom
@@ -130,53 +115,35 @@
 	// Ollama functions
 	//////////////////////////
 
-	const sendPrompt = async (
-		userPrompt: string,
-		parentId: string | null,
-		_chatId: any
-	) => {
+	const sendPrompt = async (userPrompt, parentId, _chatId) => {
 		await Promise.all(
 			selectedModels.map(async (model) => {
-				await sendPromptOllama(
-					model,
-					userPrompt,
-					parentId,
-					_chatId
-				);
+				await sendPromptOllama(model, userPrompt, parentId, _chatId);
 			})
 		);
 
-		if ($db) {
-			await chats.set(await $db.getChats());
-		}
+		await chats.set(await $db.getChats());
 	};
 
-	const sendPromptOllama = async (
-		model: any,
-		userPrompt: string,
-		parentId: string | null,
-		_chatId: any
-	) => {
+	const sendPromptOllama = async (model, userPrompt, parentId, _chatId) => {
 		console.log("sendPromptOllama");
 		let responseMessageId = uuidv4();
-		let responseMessage: ChatMessage = {
+		let responseMessage = {
 			parentId: parentId,
 			id: responseMessageId,
 			childrenIds: [],
 			role: "assistant",
 			content: "",
-			model: model,
+			model: model
 		};
 
 		history.messages[responseMessageId] = responseMessage;
 		history.currentId = responseMessageId;
 		if (parentId !== null) {
-			if (history.messages[parentId]) {
-				history.messages[parentId].childrenIds = [
-					...history.messages[parentId].childrenIds,
-					responseMessageId,
-				];
-			}
+			history.messages[parentId].childrenIds = [
+				...history.messages[parentId].childrenIds,
+				responseMessageId
+			];
 		}
 
 		await tick();
@@ -185,15 +152,15 @@
 		const res = await fetch(`${OLLAMA_API_BASE_URL}/chat`, {
 			method: "POST",
 			headers: {
-				"Content-Type": "text/event-stream",
+				"Content-Type": "text/event-stream"
 			},
 			body: JSON.stringify({
 				model: model,
 				messages: messages.map((message) => ({
 					role: message.role,
-					content: message.content,
-				})),
-			}),
+					content: message.content
+				}))
+			})
 		}).catch((err) => {
 			console.log(err);
 			return null;
@@ -209,6 +176,7 @@
 				const { value, done } = await reader.read();
 				if (done || stopResponseFlag || _chatId !== $chatId) {
 					responseMessage.done = true;
+					messages = messages;
 					break;
 				}
 
@@ -224,15 +192,12 @@
 								throw data;
 							}
 
-							if (data.done === false) {
-								if (
-									responseMessage.content === "" &&
-									data.message.content === "\n"
-								) {
+							if (data.done == false) {
+								if (responseMessage.content == "" && data.message.content == "\n") {
 									continue;
 								} else {
-									responseMessage.content +=
-										data.message.content;
+									responseMessage.content += data.message.content;
+									messages = messages;
 								}
 							} else {
 								responseMessage.done = true;
@@ -243,11 +208,11 @@
 									sample_count: data.sample_count,
 									sample_duration: data.sample_duration,
 									prompt_eval_count: data.prompt_eval_count,
-									prompt_eval_duration:
-										data.prompt_eval_duration,
+									prompt_eval_duration: data.prompt_eval_duration,
 									eval_count: data.eval_count,
-									eval_duration: data.eval_duration,
+									eval_duration: data.eval_duration
 								};
+								messages = messages;
 
 								if ($settings.responseAutoCopy) {
 									copyToClipboard(responseMessage.content);
@@ -267,14 +232,12 @@
 					window.scrollTo({ top: document.body.scrollHeight });
 				}
 
-				if ($db) {
-					await $db.updateChatById(_chatId, {
-						title: title === "" ? "ไม่มีชื่อแชท" : title,
-						models: selectedModels,
-						messages: messages,
-						history: history,
-					});
-				}
+				await $db.updateChatById(_chatId, {
+					title: title === "" ? "ไม่มีชื่อแชท" : title,
+					models: selectedModels,
+					messages: messages,
+					history: history
+				});
 			}
 		} else {
 			if (res !== null) {
@@ -295,6 +258,7 @@
 			responseMessage.error = true;
 			responseMessage.content = `เกิดปัญหาในการเชื่อมต่อกับ Ollama`;
 			responseMessage.done = true;
+			messages = messages;
 		}
 
 		stopResponseFlag = false;
@@ -303,61 +267,54 @@
 			window.scrollTo({ top: document.body.scrollHeight });
 		}
 
-		if (messages.length === 2 && messages[1].content !== "") {
-			window.history.replaceState("", "", `/c/${_chatId}`);
+		if (messages.length == 2 && messages.at(1).content !== "") {
+			window.history.replaceState(history.state, "", `/c/${_chatId}`);
 			await generateChatTitle(_chatId, userPrompt);
 		}
 	};
 
-	const submitPrompt = async (userPrompt: string) => {
-		const _chatId = $chatId;
+	const submitPrompt = async (userPrompt) => {
+		const _chatId = JSON.parse(JSON.stringify($chatId));
 		console.log("submitPrompt", _chatId);
 
 		if (selectedModels.includes("")) {
 			toast.error("ไม่ได้เลือกโมเดล");
-		} else if (messages.length !== 0 && messages[messages.length - 1].done !== true) {
+		} else if (messages.length != 0 && messages.at(-1).done != true) {
 			console.log("wait");
 		} else {
 			document.getElementById("chat-textarea").style.height = "";
 
 			let userMessageId = uuidv4();
-			let userMessage: ChatMessage = {
+			let userMessage = {
 				id: userMessageId,
-				parentId: messages.length !== 0 ? messages[messages.length - 1].id : null,
+				parentId: messages.length !== 0 ? messages.at(-1).id : null,
 				childrenIds: [],
 				role: "user",
-				content: userPrompt,
+				content: userPrompt
 			};
 
 			if (messages.length !== 0) {
-				if (history.messages[messages[messages.length - 1].id]) {
-					history.messages[messages[messages.length - 1].id].childrenIds.push(
-						userMessageId
-					);
-				}
+				history.messages[messages.at(-1).id].childrenIds.push(userMessageId);
 			}
 
 			history.messages[userMessageId] = userMessage;
 			history.currentId = userMessageId;
 
 			await tick();
-			if (messages.length === 1 && $db) {
+			if (messages.length == 1) {
 				await $db.createNewChat({
 					id: _chatId,
 					title: "ไม่มีชื่อแชท",
 					models: selectedModels,
 					messages: messages,
-					history: history,
+					history: history
 				});
 			}
 
 			prompt = "";
 
 			setTimeout(() => {
-				window.scrollTo({
-					top: document.body.scrollHeight,
-					behavior: "smooth",
-				});
+				window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 			}, 50);
 
 			await sendPrompt(userPrompt, userMessageId, _chatId);
@@ -370,33 +327,34 @@
 	};
 
 	const regenerateResponse = async () => {
-		const _chatId = $chatId;
+		const _chatId = JSON.parse(JSON.stringify($chatId));
 		console.log("regenerateResponse", _chatId);
 
-		if (messages.length !== 0 && messages[messages.length - 1].done === true) {
+		if (messages.length != 0 && messages.at(-1).done == true) {
 			messages.splice(messages.length - 1, 1);
+			messages = messages;
 
-			let userMessage = messages[messages.length - 1];
+			let userMessage = messages.at(-1);
 			let userPrompt = userMessage.content;
 
 			await sendPrompt(userPrompt, userMessage.id, _chatId);
 		}
 	};
 
-	const generateChatTitle = async (_chatId: any, userPrompt: string) => {
-		if ($settings && $settings.titleAutoGenerate === true) {
+	const generateChatTitle = async (_chatId, userPrompt) => {
+		if ($settings.titleAutoGenerate ?? true) {
 			console.log("generateChatTitle");
 
 			const res = await fetch(`${OLLAMA_API_BASE_URL}/generate`, {
 				method: "POST",
 				headers: {
-					"Content-Type": "text/event-stream",
+					"Content-Type": "text/event-stream"
 				},
 				body: JSON.stringify({
 					model: selectedModels[0],
 					prompt: `Generate a brief 3-5 word title for this question, excluding the term 'title.' Then, please reply with only the title: ${userPrompt}`,
-					stream: false,
-				}),
+					stream: false
+				})
 			})
 				.then(async (res) => {
 					if (!res.ok) throw await res.json();
@@ -411,20 +369,15 @@
 				});
 
 			if (res) {
-				await setChatTitle(
-					_chatId,
-					res.response === "" ? "ไม่มีชื่อแชท" : res.response
-				);
+				await setChatTitle(_chatId, res.response === "" ? "ไม่มีชื่อแชท" : res.response);
 			}
 		} else {
 			await setChatTitle(_chatId, `${userPrompt}`);
 		}
 	};
 
-	const setChatTitle = async (_chatId: any, _title: string) => {
-		if ($db && $db.updateChatById) {
-			await $db.updateChatById(_chatId, { title: _title });
-		}
+	const setChatTitle = async (_chatId, _title) => {
+		await $db.updateChatById(_chatId, { title: _title });
 		if (_chatId === $chatId) {
 			title = _title;
 		}
@@ -433,9 +386,7 @@
 
 <svelte:window
 	on:scroll={(e) => {
-		autoScroll =
-			window.innerHeight + window.scrollY >=
-			document.body.offsetHeight - 40;
+		autoScroll = window.innerHeight + window.scrollY >= document.body.offsetHeight - 40;
 	}}
 />
 
@@ -458,11 +409,5 @@
 		</div>
 	</div>
 
-	<MessageInput
-		bind:prompt
-		bind:autoScroll
-		{messages}
-		{submitPrompt}
-		{stopResponse}
-	/>
+	<MessageInput bind:prompt bind:autoScroll {messages} {submitPrompt} {stopResponse} />
 </div>
