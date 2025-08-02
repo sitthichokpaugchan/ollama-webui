@@ -199,10 +199,7 @@
 			}
 		}
 		await tick();
-		autoScroll = window.innerHeight + window.scrollY >= document.body.offsetHeight - 40;
-		setTimeout(() => {
-			window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-		}, 100);
+		window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 	};
 
 	const showNextMessage = async (message) => {
@@ -238,10 +235,7 @@
 			}
 		}
 		await tick();
-		autoScroll = window.innerHeight + window.scrollY >= document.body.offsetHeight - 40;
-		setTimeout(() => {
-			window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-		}, 100);
+		window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 	};
 </script>
 
@@ -491,7 +485,5 @@
 				</div>
 			</div></div>
 		{/each}
-		{#if bottomPadding}
-			<div class="mb-10" />
-		{/if}
+		
 	{/if}
