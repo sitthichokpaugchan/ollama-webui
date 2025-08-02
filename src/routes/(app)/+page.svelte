@@ -25,7 +25,7 @@
 	let messages = [];
 	let history = {
 		messages: {},
-		currentId: null
+		currentId: null,
 	};
 
 	$: if (history.currentId !== null) {
@@ -35,7 +35,9 @@
 		while (currentMessage !== null) {
 			_messages.unshift({ ...currentMessage });
 			currentMessage =
-				currentMessage.parentId !== null ? history.messages[currentMessage.parentId] : null;
+				currentMessage.parentId !== null
+					? history.messages[currentMessage.parentId]
+					: null;
 		}
 		messages = _messages;
 	} else {
@@ -63,7 +65,7 @@
 		messages = [];
 		history = {
 			messages: {},
-			currentId: null
+			currentId: null,
 		};
 		selectedModels = $page.url.searchParams.get("models")
 			? $page.url.searchParams.get("models")?.split(",")
@@ -72,7 +74,7 @@
 		let _settings = JSON.parse(localStorage.getItem("settings") ?? "{}");
 		console.log(_settings);
 		settings.set({
-			..._settings
+			..._settings,
 		});
 	};
 
@@ -134,7 +136,7 @@
 			childrenIds: [],
 			role: "assistant",
 			content: "",
-			model: model
+			model: model,
 		};
 
 		history.messages[responseMessageId] = responseMessage;
@@ -142,7 +144,7 @@
 		if (parentId !== null) {
 			history.messages[parentId].childrenIds = [
 				...history.messages[parentId].childrenIds,
-				responseMessageId
+				responseMessageId,
 			];
 		}
 
@@ -152,15 +154,15 @@
 		const res = await fetch(`${OLLAMA_API_BASE_URL}/chat`, {
 			method: "POST",
 			headers: {
-				"Content-Type": "text/event-stream"
+				"Content-Type": "text/event-stream",
 			},
 			body: JSON.stringify({
 				model: model,
 				messages: messages.map((message) => ({
 					role: message.role,
-					content: message.content
-				}))
-			})
+					content: message.content,
+				})),
+			}),
 		}).catch((err) => {
 			console.log(err);
 			return null;
@@ -193,10 +195,14 @@
 							}
 
 							if (data.done == false) {
-								if (responseMessage.content == "" && data.message.content == "\n") {
+								if (
+									responseMessage.content == "" &&
+									data.message.content == "\n"
+								) {
 									continue;
 								} else {
-									responseMessage.content += data.message.content;
+									responseMessage.content +=
+										data.message.content;
 									messages = messages;
 								}
 							} else {
@@ -208,9 +214,10 @@
 									sample_count: data.sample_count,
 									sample_duration: data.sample_duration,
 									prompt_eval_count: data.prompt_eval_count,
-									prompt_eval_duration: data.prompt_eval_duration,
+									prompt_eval_duration:
+										data.prompt_eval_duration,
 									eval_count: data.eval_count,
-									eval_duration: data.eval_duration
+									eval_duration: data.eval_duration,
 								};
 								messages = messages;
 
@@ -236,7 +243,7 @@
 					title: title === "" ? "ไม่มีชื่อแชท" : title,
 					models: selectedModels,
 					messages: messages,
-					history: history
+					history: history,
 				});
 			}
 		} else {
@@ -290,11 +297,13 @@
 				parentId: messages.length !== 0 ? messages.at(-1).id : null,
 				childrenIds: [],
 				role: "user",
-				content: userPrompt
+				content: userPrompt,
 			};
 
 			if (messages.length !== 0) {
-				history.messages[messages.at(-1).id].childrenIds.push(userMessageId);
+				history.messages[messages.at(-1).id].childrenIds.push(
+					userMessageId
+				);
 			}
 
 			history.messages[userMessageId] = userMessage;
@@ -307,14 +316,17 @@
 					title: "ไม่มีชื่อแชท",
 					models: selectedModels,
 					messages: messages,
-					history: history
+					history: history,
 				});
 			}
 
 			prompt = "";
 
 			setTimeout(() => {
-				window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+				window.scrollTo({
+					top: document.body.scrollHeight,
+					behavior: "smooth",
+				});
 			}, 50);
 
 			await sendPrompt(userPrompt, userMessageId, _chatId);
@@ -348,13 +360,13 @@
 			const res = await fetch(`${OLLAMA_API_BASE_URL}/generate`, {
 				method: "POST",
 				headers: {
-					"Content-Type": "text/event-stream"
+					"Content-Type": "text/event-stream",
 				},
 				body: JSON.stringify({
 					model: selectedModels[0],
 					prompt: `Generate a brief 3-5 word title for this question, excluding the term 'title.' Then, please reply with only the title: ${userPrompt}`,
-					stream: false
-				})
+					stream: false,
+				}),
 			})
 				.then(async (res) => {
 					if (!res.ok) throw await res.json();
@@ -369,7 +381,10 @@
 				});
 
 			if (res) {
-				await setChatTitle(_chatId, res.response === "" ? "ไม่มีชื่อแชท" : res.response);
+				await setChatTitle(
+					_chatId,
+					res.response === "" ? "ไม่มีชื่อแชท" : res.response
+				);
 			}
 		} else {
 			await setChatTitle(_chatId, `${userPrompt}`);
@@ -386,7 +401,9 @@
 
 <svelte:window
 	on:scroll={(e) => {
-		autoScroll = window.innerHeight + window.scrollY >= document.body.offsetHeight - 40;
+		autoScroll =
+			window.innerHeight + window.scrollY >=
+			document.body.offsetHeight - 40;
 	}}
 />
 
@@ -409,5 +426,11 @@
 		</div>
 	</div>
 
-	<MessageInput bind:prompt bind:autoScroll {messages} {submitPrompt} {stopResponse} />
+	<MessageInput
+		bind:prompt
+		bind:autoScroll
+		{messages}
+		{submitPrompt}
+		{stopResponse}
+	/>
 </div>
