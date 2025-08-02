@@ -335,7 +335,7 @@
 											/>
 											<div class="mt-2 mb-1 flex justify-center space-x-2 text-sm font-medium">
 												<button
-													class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-gray-100 rounded-lg transition"
+													class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg transition"
 													on:click={() => {
 														confirmEditMessage(message.id);
 													}}

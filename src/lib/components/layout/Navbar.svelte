@@ -10,29 +10,21 @@
 <!-- Main navigation bar -->
 <nav
 	id="nav"
-	class="fixed py-2.5 top-0 flex flex-row justify-center bg-white/95 dark:bg-gray-800/90 dark:text-gray-200 backdrop-blur-xl w-screen z-30"
+	class="fixed top-0 flex w-screen items-center justify-between p-4 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 z-30"
 >
-	<div class="flex max-w-3xl w-full mx-auto px-3">
-		<div class="flex w-full max-w-full">
-			<div class="pr-2 self-center">
-				<!-- Button to start a new chat -->
-				<button
-					class="cursor-pointer p-1 flex dark:hover:bg-gray-700 rounded-lg transition"
-					on:click={async () => {
-						console.log("newChat"); // Log the action for debugging
-						goto("/"); // Navigate to the home page
-						await chatId.set(uuidv4()); // Set a new chat ID
-					}}
-				>
-					แชทใหม่
-				</button>
-			</div>
-			<!-- Display the title of the application -->
-			<div
-				class="flex-1 self-center font-medium text-ellipsis whitespace-nowrap overflow-hidden"
-			>
-				{title != "" ? title : "Ollama Web UI"}
-			</div>
+	<div class="container mx-auto flex items-center justify-between">
+		<button
+			class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg transition"
+			on:click={async () => {
+				console.log("newChat");
+				goto("/");
+				await chatId.set(uuidv4());
+			}}
+		>
+			แชทใหม่
+		</button>
+		<div class="text-lg font-semibold">
+			{title != "" ? title : "Ollama Web UI"}
 		</div>
 	</div>
 </nav>

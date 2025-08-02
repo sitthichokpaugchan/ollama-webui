@@ -22,10 +22,23 @@
 	let title = "";
 	let prompt = "";
 
-	let messages = [];
-	let history = {
+	let messages: ChatMessage[] = [];
+	let history: { messages: any; currentId: string | null } = {
 		messages: {},
 		currentId: null,
+	};
+
+	type ChatMessage = {
+		id: string;
+		parentId: string | null;
+		childrenIds: string[];
+		role: "user" | "assistant";
+		content: string;
+		model?: string;
+		done?: boolean;
+		context?: any;
+		info?: any;
+		error?: boolean;
 	};
 
 	$: if (history.currentId !== null) {
@@ -78,9 +91,9 @@
 		});
 	};
 
-	const copyToClipboard = (text) => {
+	const copyToClipboard = (text: string) => {
 		if (!navigator.clipboard) {
-			var textArea = document.createElement("textarea");
+			const textArea = document.createElement("textarea");
 			textArea.value = text;
 
 			// Avoid scrolling to bottom
@@ -117,20 +130,36 @@
 	// Ollama functions
 	//////////////////////////
 
-	const sendPrompt = async (userPrompt, parentId, _chatId) => {
+	const sendPrompt = async (
+		userPrompt: string,
+		parentId: string | null,
+		_chatId: any
+	) => {
 		await Promise.all(
 			selectedModels.map(async (model) => {
-				await sendPromptOllama(model, userPrompt, parentId, _chatId);
+				await sendPromptOllama(
+					model,
+					userPrompt,
+					parentId,
+					_chatId
+				);
 			})
 		);
 
-		await chats.set(await $db.getChats());
+		if ($db) {
+			await chats.set(await $db.getChats());
+		}
 	};
 
-	const sendPromptOllama = async (model, userPrompt, parentId, _chatId) => {
+	const sendPromptOllama = async (
+		model: any,
+		userPrompt: string,
+		parentId: string | null,
+		_chatId: any
+	) => {
 		console.log("sendPromptOllama");
 		let responseMessageId = uuidv4();
-		let responseMessage = {
+		let responseMessage: ChatMessage = {
 			parentId: parentId,
 			id: responseMessageId,
 			childrenIds: [],
@@ -142,10 +171,12 @@
 		history.messages[responseMessageId] = responseMessage;
 		history.currentId = responseMessageId;
 		if (parentId !== null) {
-			history.messages[parentId].childrenIds = [
-				...history.messages[parentId].childrenIds,
-				responseMessageId,
-			];
+			if (history.messages[parentId]) {
+				history.messages[parentId].childrenIds = [
+					...history.messages[parentId].childrenIds,
+					responseMessageId,
+				];
+			}
 		}
 
 		await tick();
@@ -178,7 +209,6 @@
 				const { value, done } = await reader.read();
 				if (done || stopResponseFlag || _chatId !== $chatId) {
 					responseMessage.done = true;
-					messages = messages;
 					break;
 				}
 
@@ -194,16 +224,15 @@
 								throw data;
 							}
 
-							if (data.done == false) {
+							if (data.done === false) {
 								if (
-									responseMessage.content == "" &&
-									data.message.content == "\n"
+									responseMessage.content === "" &&
+									data.message.content === "\n"
 								) {
 									continue;
 								} else {
 									responseMessage.content +=
 										data.message.content;
-									messages = messages;
 								}
 							} else {
 								responseMessage.done = true;
@@ -219,7 +248,6 @@
 									eval_count: data.eval_count,
 									eval_duration: data.eval_duration,
 								};
-								messages = messages;
 
 								if ($settings.responseAutoCopy) {
 									copyToClipboard(responseMessage.content);
@@ -239,12 +267,14 @@
 					window.scrollTo({ top: document.body.scrollHeight });
 				}
 
-				await $db.updateChatById(_chatId, {
-					title: title === "" ? "ไม่มีชื่อแชท" : title,
-					models: selectedModels,
-					messages: messages,
-					history: history,
-				});
+				if ($db) {
+					await $db.updateChatById(_chatId, {
+						title: title === "" ? "ไม่มีชื่อแชท" : title,
+						models: selectedModels,
+						messages: messages,
+						history: history,
+					});
+				}
 			}
 		} else {
 			if (res !== null) {
@@ -265,7 +295,6 @@
 			responseMessage.error = true;
 			responseMessage.content = `เกิดปัญหาในการเชื่อมต่อกับ Ollama`;
 			responseMessage.done = true;
-			messages = messages;
 		}
 
 		stopResponseFlag = false;
@@ -274,43 +303,45 @@
 			window.scrollTo({ top: document.body.scrollHeight });
 		}
 
-		if (messages.length == 2 && messages.at(1).content !== "") {
-			window.history.replaceState(history.state, "", `/c/${_chatId}`);
+		if (messages.length === 2 && messages[1].content !== "") {
+			window.history.replaceState("", "", `/c/${_chatId}`);
 			await generateChatTitle(_chatId, userPrompt);
 		}
 	};
 
-	const submitPrompt = async (userPrompt) => {
-		const _chatId = JSON.parse(JSON.stringify($chatId));
+	const submitPrompt = async (userPrompt: string) => {
+		const _chatId = $chatId;
 		console.log("submitPrompt", _chatId);
 
 		if (selectedModels.includes("")) {
 			toast.error("ไม่ได้เลือกโมเดล");
-		} else if (messages.length != 0 && messages.at(-1).done != true) {
+		} else if (messages.length !== 0 && messages[messages.length - 1].done !== true) {
 			console.log("wait");
 		} else {
 			document.getElementById("chat-textarea").style.height = "";
 
 			let userMessageId = uuidv4();
-			let userMessage = {
+			let userMessage: ChatMessage = {
 				id: userMessageId,
-				parentId: messages.length !== 0 ? messages.at(-1).id : null,
+				parentId: messages.length !== 0 ? messages[messages.length - 1].id : null,
 				childrenIds: [],
 				role: "user",
 				content: userPrompt,
 			};
 
 			if (messages.length !== 0) {
-				history.messages[messages.at(-1).id].childrenIds.push(
-					userMessageId
-				);
+				if (history.messages[messages[messages.length - 1].id]) {
+					history.messages[messages[messages.length - 1].id].childrenIds.push(
+						userMessageId
+					);
+				}
 			}
 
 			history.messages[userMessageId] = userMessage;
 			history.currentId = userMessageId;
 
 			await tick();
-			if (messages.length == 1) {
+			if (messages.length === 1 && $db) {
 				await $db.createNewChat({
 					id: _chatId,
 					title: "ไม่มีชื่อแชท",
@@ -339,22 +370,21 @@
 	};
 
 	const regenerateResponse = async () => {
-		const _chatId = JSON.parse(JSON.stringify($chatId));
+		const _chatId = $chatId;
 		console.log("regenerateResponse", _chatId);
 
-		if (messages.length != 0 && messages.at(-1).done == true) {
+		if (messages.length !== 0 && messages[messages.length - 1].done === true) {
 			messages.splice(messages.length - 1, 1);
-			messages = messages;
 
-			let userMessage = messages.at(-1);
+			let userMessage = messages[messages.length - 1];
 			let userPrompt = userMessage.content;
 
 			await sendPrompt(userPrompt, userMessage.id, _chatId);
 		}
 	};
 
-	const generateChatTitle = async (_chatId, userPrompt) => {
-		if ($settings.titleAutoGenerate ?? true) {
+	const generateChatTitle = async (_chatId: any, userPrompt: string) => {
+		if ($settings && $settings.titleAutoGenerate === true) {
 			console.log("generateChatTitle");
 
 			const res = await fetch(`${OLLAMA_API_BASE_URL}/generate`, {
@@ -391,8 +421,10 @@
 		}
 	};
 
-	const setChatTitle = async (_chatId, _title) => {
-		await $db.updateChatById(_chatId, { title: _title });
+	const setChatTitle = async (_chatId: any, _title: string) => {
+		if ($db && $db.updateChatById) {
+			await $db.updateChatById(_chatId, { title: _title });
+		}
 		if (_chatId === $chatId) {
 			title = _title;
 		}
