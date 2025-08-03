@@ -216,10 +216,8 @@
 						</div>
 					{/if}
 				</div>
-{:else}
-				<div class="px-3 py-2 text-gray-500">
-					ไม่มีรายการประวัติ
-				</div>
+			{:else}
+				<div class="px-3 py-2 text-gray-500">ไม่มีรายการประวัติ</div>
 			{/each}
 		</div>
 	</div>
