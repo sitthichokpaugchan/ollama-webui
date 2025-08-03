@@ -21,13 +21,17 @@
 				bind:value={selectedModel}
 				{disabled}
 			>
-				<option class=" text-gray-700" value="" selected>เลือกโมเดล</option>
+				<option class=" text-gray-700" value="" selected
+					>เลือกโมเดล</option
+				>
 
 				{#each $models as model}
 					{#if model.name === "hr"}
 						<hr />
 					{:else}
-						<option value={model.name} class="text-gray-700 text-lg">{model.name}</option>
+						<option value={model.name} class="text-gray-700 text-lg"
+							>{model.name}</option
+						>
 					{/if}
 				{/each}
 			</select>
