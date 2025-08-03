@@ -14,9 +14,9 @@
 	let title: string = "Ollama Web UI";
 	let search = "";
 
-	let chatDeleteId = null;
+	let chatDeleteId: string | null = null;
 
-	let chatTitleEditId = null;
+	let chatTitleEditId: string | null = null;
 	let chatTitle = "";
 
 	// Define the onMount function to be called when the component mounts
@@ -25,17 +25,21 @@
 		if (window.innerWidth > 1280) {
 			show = true;
 		}
-
-		// Set the chats array from the database using the $db.getChats method
-		await chats.set(await $db.getChats());
 	});
+
+	// Reactively set the chats array from the database whenever $db changes
+	$: if ($db) {
+		(async () => {
+			await chats.set(await $db.getChats());
+		})();
+	}
 
 	/**
 	 * Load a chat by its ID and navigate to the corresponding route
 	 *
 	 * @param {string} id - The ID of the chat to load
 	 */
-	const loadChat = async (id) => {
+	const loadChat = async (id: string) => {
 		goto(`/c/${id}`);
 	};
 
@@ -45,8 +49,8 @@
 	 * @param {string} id - The ID of the chat to edit
 	 * @param {string} _title - The new title for the chat
 	 */
-	const editChatTitle = async (id, _title) => {
-		await $db.updateChatById(id, {
+	const editChatTitle = async (id: string, _title: string) => {
+		await $db!.updateChatById(id, {
 			title: _title,
 		});
 		title = _title;
@@ -57,9 +61,9 @@
 	 *
 	 * @param {string} id - The ID of the chat to delete
 	 */
-	const deleteChat = async (id) => {
+	const deleteChat = async (id: string) => {
 		goto("/");
-		$db.deleteChatById(id);
+		$db!.deleteChatById(id);
 	};
 </script>
 
@@ -211,6 +215,10 @@
 							{/if}
 						</div>
 					{/if}
+				</div>
+{:else}
+				<div class="px-3 py-2 text-gray-500">
+					ไม่มีรายการประวัติ
 				</div>
 			{/each}
 		</div>
