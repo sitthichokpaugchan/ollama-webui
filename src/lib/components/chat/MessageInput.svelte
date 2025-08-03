@@ -14,10 +14,7 @@
 					class="bg-white border border-gray-100 dark:bg-white/20 dark:border-none p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm"
 					on:click={() => {
 						autoScroll = true;
-						window.scrollTo({
-							top: document.body.scrollHeight,
-							behavior: "smooth",
-						});
+						window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 					}}
 				>
 					เลื่อนไปด้านล่าง
@@ -44,19 +41,14 @@
 								if (e.keyCode == 13 && !e.shiftKey) {
 									e.preventDefault();
 								}
-								if (
-									prompt !== "" &&
-									e.keyCode == 13 &&
-									!e.shiftKey
-								) {
+								if (prompt !== "" && e.keyCode == 13 && !e.shiftKey) {
 									submitPrompt(prompt);
 								}
 							}}
 							rows="1"
 							on:input={(e) => {
 								e.target.style.height = "";
-								e.target.style.height =
-									Math.min(e.target.scrollHeight, 200) + "px";
+								e.target.style.height = Math.min(e.target.scrollHeight, 200) + "px";
 							}}
 						/>
 						<div class="flex space-x-0.5 mb-2 mr-2">

@@ -3,14 +3,7 @@
 	import { openDB } from "idb";
 	import { onMount, tick } from "svelte";
 	import { goto } from "$app/navigation";
-	import {
-		showSettings,
-		settings,
-		models,
-		db,
-		chats,
-		chatId,
-	} from "$lib/stores";
+	import { showSettings, settings, models, db, chats, chatId } from "$lib/stores";
 	import SettingsModal from "$lib/components/chat/SettingsModal.svelte";
 	import Sidebar from "$lib/components/layout/Sidebar.svelte";
 	import toast from "svelte-french-toast";
@@ -22,8 +15,8 @@
 			method: "GET",
 			headers: {
 				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
+				"Content-Type": "application/json"
+			}
 		})
 			.then(async (res) => {
 				if (!res.ok) throw await res.json();
@@ -48,10 +41,10 @@
 			upgrade(db) {
 				const store = db.createObjectStore("chats", {
 					keyPath: "id",
-					autoIncrement: true,
+					autoIncrement: true
 				});
 				store.createIndex("timestamp", "timestamp");
-			},
+			}
 		});
 		return {
 			db: DB,
@@ -62,7 +55,7 @@
 				let chats = await this.db.getAllFromIndex("chats", "timestamp");
 				chats = chats.map((item, idx) => ({
 					title: chats[chats.length - 1 - idx].title,
-					id: chats[chats.length - 1 - idx].id,
+					id: chats[chats.length - 1 - idx].id
 				}));
 				return chats;
 			},
@@ -80,7 +73,7 @@
 			},
 			addChat: async function (chat) {
 				await this.db.put("chats", {
-					...chat,
+					...chat
 				});
 			},
 			createNewChat: async function (chat) {
@@ -92,7 +85,7 @@
 				await this.db.put("chats", {
 					...chat,
 					...updated,
-					timestamp: Date.now(),
+					timestamp: Date.now()
 				});
 				await chats.set(await this.getChats());
 			},
@@ -108,9 +101,7 @@
 	};
 
 	onMount(async () => {
-		await settings.set(
-			JSON.parse(localStorage.getItem("settings") ?? "{}")
-		);
+		await settings.set(JSON.parse(localStorage.getItem("settings") ?? "{}"));
 		await models.set(await getModels());
 		let _db = await getDB();
 		await db.set(_db);
@@ -121,7 +112,7 @@
 
 <div class="app relative">
 	<div
-		class="text-gray-100 bg-gray-800 min-h-screen overflow-auto flex flex-row pt-16 sm:pt-20"
+		class="text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-800 min-h-screen overflow-auto flex flex-row pt-16 sm:pt-20"
 	>
 		<Sidebar />
 		<SettingsModal bind:show={$showSettings} />
@@ -144,4 +135,6 @@
 	pre[class*="language-"] {
 		@apply relative overflow-auto my-2 p-4 rounded-lg;
 	}
+
+	
 </style>
