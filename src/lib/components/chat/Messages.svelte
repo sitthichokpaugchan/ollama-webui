@@ -8,15 +8,17 @@
 	import { chatId } from "$lib/stores";
 	import { tick } from "svelte";
 	import toast from "svelte-french-toast";
+	import { copyToClipboard } from "$lib/application/clipboardService";
+	import type { Message, History } from "$lib/domain/message";
 
-	export let sendPrompt: Function;
-	export let regenerateResponse: Function;
-	export let bottomPadding = false;
-	export let autoScroll;
-	export let history = {};
-	export let messages = [];
+export let sendPrompt: (prompt: string, messageId: string, chatId: string) => Promise<void>;
+export let regenerateResponse: () => void;
+export let bottomPadding = false;
+export let autoScroll: boolean;
+export let history: History;
+export let messages: Message[];
 
-	$: if (messages && messages.length > 0 && (messages.at(-1).done ?? false)) {
+	$: if (messages && messages.length > 0 && (messages.at(-1)?.done ?? false)) {
 		(async () => {
 			await tick();
 			renderLatex();
@@ -34,10 +36,12 @@
 
 	const createCopyCodeBlockButton = () => {
 		let blocks = document.querySelectorAll("pre");
-		blocks.forEach((block) => {
+		blocks.forEach((block: HTMLElement) => {
 			if (navigator.clipboard && block.childNodes.length < 2 && block.id !== "user-message") {
 				let code = block.querySelector("code");
-				code.classList.add("rounded-t-none");
+				if (code) {
+					code.classList.add("rounded-t-none");
+				}
 
 				let topBarDiv = document.createElement("div");
 				topBarDiv.classList.add(
@@ -50,9 +54,11 @@
 				);
 
 				let langDiv = document.createElement("div");
-				let codeClassNames = code?.className.split(" ");
-				langDiv.textContent =
-					codeClassNames[0] === "hljs" ? codeClassNames[1].slice(9) : codeClassNames[0].slice(9);
+				if (code) {
+					let codeClassNames = code.className.split(" ");
+					langDiv.textContent =
+						codeClassNames[0] === "hljs" ? codeClassNames[1].slice(9) : codeClassNames[0].slice(9);
+				}
 				langDiv.classList.add("text-white", "text-xs", "m-1");
 
 				let button = document.createElement("button");
@@ -74,14 +80,16 @@
 			}
 		});
 
-		async function copyCode(block, button) {
+		async function copyCode(block: HTMLElement, button: HTMLButtonElement) {
 			let code = block.querySelector("code");
-			let text = code.innerText;
-			await navigator.clipboard.writeText(text);
-			button.innerText = "คัดลอกแล้ว";
-			setTimeout(() => {
-				button.innerText = "คัดลอก";
-			}, 1000);
+			if (code) {
+				let text = code.innerText;
+				await navigator.clipboard.writeText(text);
+				button.innerText = "คัดลอกแล้ว";
+				setTimeout(() => {
+					button.innerText = "คัดลอก";
+				}, 1000);
+			}
 		}
 	};
 
@@ -99,52 +107,26 @@
 		}
 	};
 
-	const copyToClipboard = (text) => {
-		if (!navigator.clipboard) {
-			var textArea = document.createElement("textarea");
-			textArea.value = text;
-			textArea.style.top = "0";
-			textArea.style.left = "0";
-			textArea.style.position = "fixed";
-			document.body.appendChild(textArea);
-			textArea.focus();
-			textArea.select();
-			try {
-				var successful = document.execCommand("copy");
-				var msg = successful ? "successful" : "unsuccessful";
-				console.log("Copying text command was " + msg);
-			} catch (err) {
-				console.error("Unable to copy", err);
-			}
-			document.body.removeChild(textArea);
-			return;
-		}
-		navigator.clipboard.writeText(text).then(
-			function () {
-				console.log("Copying to clipboard was successful");
-				toast.success("คัดลอกไปยังคลิปบอร์ดแล้ว");
-			},
-			function (err) {
-				console.error("Could not copy text: ", err);
-			}
-		);
-	};
 
-	const editMessageHandler = async (messageId) => {
+
+
+	const editMessageHandler = async (messageId: string) => {
 		history.messages[messageId].edit = true;
 		history.messages[messageId].originalContent = history.messages[messageId].content;
 		history.messages[messageId].editedContent = history.messages[messageId].content;
 		await tick();
 		const editElement = document.getElementById(`message-edit-${messageId}`);
-		editElement.style.height = "";
-		editElement.style.height = `${editElement.scrollHeight}px`;
+		if (editElement) {
+			editElement.style.height = "";
+			editElement.style.height = `${editElement.scrollHeight}px`;
+		}
 	};
 
-	const confirmEditMessage = async (messageId) => {
+	const confirmEditMessage = async (messageId: string) => {
 		history.messages[messageId].edit = false;
-		let userPrompt = history.messages[messageId].editedContent;
+		let userPrompt = history.messages[messageId].editedContent || '';
 		let userMessageId = uuidv4();
-		let userMessage = {
+		let userMessage: Message = {
 			id: userMessageId,
 			parentId: history.messages[messageId].parentId,
 			childrenIds: [],
@@ -165,34 +147,34 @@
 		await sendPrompt(userPrompt, userMessageId, $chatId);
 	};
 
-	const cancelEditMessage = (messageId) => {
+	const cancelEditMessage = (messageId: string) => {
 		history.messages[messageId].edit = false;
 		history.messages[messageId].editedContent = undefined;
 	};
 
-	const showPreviousMessage = async (message) => {
+	const showPreviousMessage = async (message: Message) => {
 		if (message.parentId !== null) {
-			let messageId =
+			let messageId: string =
 				history.messages[message.parentId].childrenIds[
 					Math.max(history.messages[message.parentId].childrenIds.indexOf(message.id) - 1, 0)
 				];
-			if (message.id !== messageId) {
-				let messageChildrenIds = history.messages[messageId].childrenIds;
-				while (messageChildrenIds.length !== 0) {
-					messageId = messageChildrenIds.at(-1);
-					messageChildrenIds = history.messages[messageId].childrenIds;
-				}
-				history.currentId = messageId;
+		if (message.id !== messageId) {
+			let messageChildrenIds = history.messages[messageId].childrenIds;
+			while (messageChildrenIds.length !== 0) {
+				messageId = messageChildrenIds.at(-1) as string;
+				messageChildrenIds = history.messages[messageId].childrenIds;
 			}
+			history.currentId = messageId;
+		}
 		} else {
 			let childrenIds = Object.values(history.messages)
-				.filter((message) => message.parentId === null)
-				.map((message) => message.id);
-			let messageId = childrenIds[Math.max(childrenIds.indexOf(message.id) - 1, 0)];
+				.filter((msg) => msg.parentId === null)
+				.map((msg) => msg.id);
+			let messageId: string = childrenIds[Math.max(childrenIds.indexOf(message.id) - 1, 0)];
 			if (message.id !== messageId) {
 				let messageChildrenIds = history.messages[messageId].childrenIds;
 				while (messageChildrenIds.length !== 0) {
-					messageId = messageChildrenIds.at(-1);
+					messageId = messageChildrenIds.at(-1) as string;
 					messageChildrenIds = history.messages[messageId].childrenIds;
 				}
 				history.currentId = messageId;
@@ -202,33 +184,33 @@
 		window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 	};
 
-	const showNextMessage = async (message) => {
+	const showNextMessage = async (message: Message) => {
 		if (message.parentId !== null) {
-			let messageId =
+			let messageId: string =
 				history.messages[message.parentId].childrenIds[
 					Math.min(
 						history.messages[message.parentId].childrenIds.indexOf(message.id) + 1,
 						history.messages[message.parentId].childrenIds.length - 1
 					)
 				];
-			if (message.id !== messageId) {
-				let messageChildrenIds = history.messages[messageId].childrenIds;
-				while (messageChildrenIds.length !== 0) {
-					messageId = messageChildrenIds.at(-1);
-					messageChildrenIds = history.messages[messageId].childrenIds;
-				}
-				history.currentId = messageId;
+		if (message.id !== messageId) {
+			let messageChildrenIds = history.messages[messageId].childrenIds;
+			while (messageChildrenIds.length !== 0) {
+				messageId = messageChildrenIds.at(-1) as string;
+				messageChildrenIds = history.messages[messageId].childrenIds;
 			}
+			history.currentId = messageId;
+		}
 		} else {
 			let childrenIds = Object.values(history.messages)
-				.filter((message) => message.parentId === null)
-				.map((message) => message.id);
-			let messageId =
+				.filter((msg) => msg.parentId === null)
+				.map((msg) => msg.id);
+			let messageId: string =
 				childrenIds[Math.min(childrenIds.indexOf(message.id) + 1, childrenIds.length - 1)];
 			if (message.id !== messageId) {
 				let messageChildrenIds = history.messages[messageId].childrenIds;
 				while (messageChildrenIds.length !== 0) {
-					messageId = messageChildrenIds.at(-1);
+					messageId = messageChildrenIds.at(-1) as string;
 					messageChildrenIds = history.messages[messageId].childrenIds;
 				}
 				history.currentId = messageId;
@@ -317,14 +299,16 @@
 											{/each}
 										</div>
 									{/if}
-									{#if message?.edit === true}
+									{#if message.edit === true}
 										<div class="w-full">
 											<textarea
 												id="message-edit-{message.id}"
 												class="bg-transparent outline-none w-full resize-none"
 												bind:value={history.messages[message.id].editedContent}
 												on:input={(e) => {
-													e.target.style.height = `${e.target.scrollHeight}px`;
+													if (e.target instanceof HTMLTextAreaElement) {
+														e.target.style.height = `${e.target.scrollHeight}px`;
+													}
 												}}
 											/>
 											<div class="mt-2 mb-1 flex justify-center space-x-2 text-sm font-medium">
@@ -416,7 +400,7 @@
 								{#if message.role === "assistant"}
 									<div>
 										<div class="w-full">
-											{#if message?.error === true}
+											{#if message.error === true}
 												<div
 													class="flex mt-2 mb-4 space-x-2 border border-red-500 bg-red-500/30 font-medium rounded-lg p-4"
 												>
@@ -428,7 +412,7 @@
 											{/if}
 											{#if message.done}
 												<div class="flex justify-start space-x-1 -mt-2">
-													{#if message.parentId !== null && message.parentId in history.messages && (history.messages[message.parentId]?.childrenIds.length ?? 0) > 1}
+													{#if message.parentId !== null && history.messages[message.parentId] && (history.messages[message.parentId].childrenIds.length ?? 0) > 1}
 														<div class="flex items-center">
 															<button
 																on:click={() => {
