@@ -1,6 +1,14 @@
 import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vite";
+import { defineConfig, mergeConfig } from "vite";
 
-export default defineConfig({
+const config = {
 	plugins: [sveltekit()]
-});
+};
+
+export default defineConfig(mergeConfig(config, {
+	test: {
+		environment: 'jsdom',
+		setupFiles: ['./setupTest.js'],
+		globals: true
+	}
+}));

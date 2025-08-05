@@ -1,4 +1,7 @@
-/// <reference types="@sveltejs/kit" />
-interface ImportMetaEnv {
-  VITE_OLLAMA_API_BASE_URL: string;
+// See https://kit.svelte.dev/docs/types#app
+// for information about these interfaces
+declare global {
+	namespace App { }
 }
+
+export { };

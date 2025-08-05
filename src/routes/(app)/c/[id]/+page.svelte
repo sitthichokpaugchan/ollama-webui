@@ -213,8 +213,9 @@
 
 					for (const line of lines) {
 						if (line !== "") {
-							console.log(line);
-							let data = JSON.parse(line);
+							// Remove "data: " prefix if present (SSE format)
+							const jsonString = line.startsWith('data: ') ? line.substring(6) : line;
+							let data = JSON.parse(jsonString);
 
 							if ("detail" in data) {
 								throw data;
@@ -229,7 +230,7 @@
 								} else {
 									responseMessage.content +=
 										data.message.content;
-									messages = messages;
+									history = history; // Force history reactivity
 								}
 							} else {
 								responseMessage.done = true;
@@ -245,7 +246,7 @@
 									eval_count: data.eval_count,
 									eval_duration: data.eval_duration,
 								};
-								messages = messages;
+								history = history; // Force history reactivity
 
 								if (
 									$settings.notificationEnabled &&
@@ -277,7 +278,6 @@
 				if (autoScroll) {
 					window.scrollTo({ top: document.body.scrollHeight });
 				}
-
 				await $db.updateChatById(_chatId, {
 					title: title === "" ? "ไม่มีชื่อแชท" : title,
 					models: selectedModels,
@@ -304,7 +304,7 @@
 			responseMessage.error = true;
 			responseMessage.content = `เกิดปัญหาในการเชื่อมต่อกับ Ollama`;
 			responseMessage.done = true;
-			messages = messages;
+			history = history; // Force history reactivity
 		}
 
 		stopResponseFlag = false;
@@ -392,47 +392,6 @@
 		}
 	};
 
-	const generateChatTitle = async (_chatId, userPrompt) => {
-		if ($settings.titleAutoGenerate ?? true) {
-			console.log("generateChatTitle");
-
-			const res = await fetch(`${OLLAMA_API_BASE_URL}/generate`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "text/event-stream",
-					...($settings.authHeader && {
-						Authorization: $settings.authHeader,
-					}),
-				},
-				body: JSON.stringify({
-					model: selectedModels[0],
-					prompt: `Generate a brief 3-5 word title for this question, excluding the term 'title.' Then, please reply with only the title: ${userPrompt}`,
-					stream: false,
-				}),
-			})
-				.then(async (res) => {
-					if (!res.ok) throw await res.json();
-					return res.json();
-				})
-				.catch((error) => {
-					if ("detail" in error) {
-						toast.error(error.detail);
-					}
-					console.log(error);
-					return null;
-				});
-
-			if (res) {
-				await setChatTitle(
-					_chatId,
-					res.response === "" ? "ไม่มีชื่อแชท" : res.response
-				);
-			}
-		} else {
-			await setChatTitle(_chatId, `${userPrompt}`);
-		}
-	};
-
 	const setChatTitle = async (_chatId, _title) => {
 		await $db.updateChatById(_chatId, { title: _title });
 		if (_chatId === $chatId) {
@@ -450,7 +409,7 @@
 />
 
 {#if loaded}
-	<Navbar {title} shareEnabled={messages.length > 0} />
+	<Navbar {title} />
 	<div class="min-h-screen w-full flex justify-center">
 		<div class=" py-2.5 flex flex-col justify-between w-full">
 			<div class="max-w-2xl mx-auto w-full px-3 md:px-0 mt-10">
@@ -462,7 +421,6 @@
 
 			<div class=" h-full mt-10 mb-32 w-full flex flex-col">
 				<Messages
-					{selectedModels}
 					bind:history
 					bind:messages
 					bind:autoScroll

@@ -30,8 +30,10 @@
 			<div class="bg-gradient-to-t from-white dark:from-gray-800 pb-2">
 				<form
 					class="flex flex-col w-full rounded-xl border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100"
-					on:submit|preventDefault={() => {
+					on:submit|preventDefault={(e) => {
 						submitPrompt(prompt);
+						prompt = "";
+						e.target.style.height = "auto";
 					}}
 				>
 					<div class="flex items-end">
@@ -41,15 +43,13 @@
 							placeholder="ส่งข้อความ"
 							bind:value={prompt}
 							on:keypress={(e) => {
-								if (e.keyCode == 13 && !e.shiftKey) {
-									e.preventDefault();
-								}
-								if (
-									prompt !== "" &&
-									e.keyCode == 13 &&
-									!e.shiftKey
-								) {
-									submitPrompt(prompt);
+								if (e.key === "Enter" && !e.shiftKey) {
+									e.preventDefault(); // Prevent default to avoid new line
+									if (prompt.trim() !== "") { // Check for non-empty prompt after trimming
+										submitPrompt(prompt);
+										prompt = ""; // Clear prompt after submission
+										e.target.style.height = "auto"; // Reset textarea height
+									}
 								}
 							}}
 							rows="1"
