@@ -285,12 +285,12 @@
 										<div class="h-2 bg-gray-200 rounded mr-14" />
 										<div class="grid grid-cols-3 gap-4">
 											<div class="h-2 bg-gray-200 rounded col-span-2" />
-											<div class="h-2 bg-gray-600 rounded col-span-1" />
+											<div class="h-2 bg-gray-200 rounded col-span-1" />
 										</div>
 										<div class="grid grid-cols-4 gap-4">
 											<div class="h-2 bg-gray-200 rounded col-span-1" />
-											<div class="h-2 bg-gray-600 rounded col-span-2" />
-											<div class="h-2 bg-gray-600 rounded col-span-1 mr-4" />
+											<div class="h-2 bg-gray-200 rounded col-span-2" />
+											<div class="h-2 bg-gray-200 rounded col-span-1 mr-4" />
 										</div>
 										<div class="h-2 bg-gray-200 rounded" />
 									</div>

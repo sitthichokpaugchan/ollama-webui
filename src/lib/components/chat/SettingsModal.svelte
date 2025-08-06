@@ -7,6 +7,9 @@
   import { writable } from "svelte/store";
   export let show = false;
   let deleteModelTag = "";
+  let importModelTag = "";
+  let importReader: ReadableStreamDefaultReader | null = null;
+  let importProgress = 0; // New variable for import
   let contextLengths = ["4k", "8k", "16k", "32k", "64k", "128k"];
   let selectedContextLengthIndex = contextLengths.findIndex(
     (len) => parseInt(len) * 1000 === $contextLength
@@ -46,9 +49,7 @@
   );
   // Stop: Sets the stop sequences to use.
   // When this sequence is encountered, the model will stop generating.
-  export const stop = writable(
-    localStorage.getItem("stop") || ""
-  );
+  export const stop = writable(localStorage.getItem("stop") || "");
   $: {
     localStorage.setItem("temperature", String($temperature));
     console.log("Saving temperature:", $temperature);
@@ -108,14 +109,9 @@
             let data = JSON.parse(line);
             if (data.error) {
               throw data.error;
+            } else {
+              toast.success(`${deleteModelTag} ถูกลบแล้ว`);
             }
-            if (data.detail) {
-              throw data.detail;
-            }
-            if (data.status) {
-            }
-          } else {
-            toast.success(`${deleteModelTag} ถูกลบแล้ว`);
           }
         }
       } catch (error) {
@@ -126,6 +122,65 @@
     deleteModelTag = "";
     models.set(await getModels());
   };
+
+  const importModelHandler = async () => {
+    const res = await fetch(`${OLLAMA_API_BASE_URL}/pull`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/event-stream",
+      },
+      body: JSON.stringify({
+        name: importModelTag,
+        stream: true,
+      }),
+    });
+
+    importReader = res.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(splitStream("\n"))
+      .getReader();
+
+    while (true) {
+      const { value, done } = await importReader.read();
+      if (done) break;
+      try {
+        let lines = value.split("\n");
+        for (const line of lines) {
+          if (line !== "" && line !== "null") {
+            let data = JSON.parse(line);
+            if (data.error) {
+              throw data.error;
+            }
+            if (data.status === "success") {
+              toast.success(`${importModelTag} นำเข้าสำเร็จ`);
+            }
+            if (data.total && data.completed) {
+              importProgress = Math.round((data.completed / data.total) * 100);
+            } else if (data.digest && data.total) {
+              // For the initial manifest pull
+              importProgress = Math.round((data.completed / data.total) * 100);
+            }
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error);
+      }
+    }
+    importModelTag = "";
+    importReader = null;
+    importProgress = 0; // Reset progress on completion
+    models.set(await getModels());
+  };
+
+  const cancelImportHandler = () => {
+    if (importReader) {
+      importReader.cancel();
+      importReader = null;
+      toast.error("การนำเข้าถูกยกเลิก");
+    }
+  };
+
   const getModels = async (url = "") => {
     let models = [];
     const res = await fetch(`${url ? url : OLLAMA_API_BASE_URL}/tags`, {
@@ -184,6 +239,44 @@
                   คลิกที่นี่
                 </a>
               </div>
+              <div class="flex w-full">
+                <div class="flex-1 mr-2">
+                  <input
+                    type="text"
+                    class="w-full rounded py-2 px-4 text-sm text-gray-700 bg-gray-50 outline-none"
+                    bind:value={importModelTag}
+                    placeholder="ชื่อโมเดล (เช่น llama2)"
+                  />
+                </div>
+                <button
+                  class="px-3 bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition flex items-center text-sm"
+                  on:click={() => {
+                    importModelHandler();
+                  }}
+                >
+                  นำเข้า
+                </button>
+                <button
+                  class="px-3 text-white rounded-lg transition flex items-center text-sm ml-2 {importReader
+                    ? 'bg-red-500 hover:bg-red-700'
+                    : 'bg-red-500 opacity-50 cursor-not-allowed'}"
+                  on:click={cancelImportHandler}
+                  disabled={!importReader}
+                >
+                  ยกเลิก
+                </button>
+              </div>
+              {#if importReader}
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    class="bg-blue-600 h-2.5 rounded-full"
+                    style="width: {importProgress}%"
+                  />
+                </div>
+                <div class="text-xs text-gray-500 mt-1 text-right">
+                  {importProgress}%
+                </div>
+              {/if}
             </div>
             <hr class="border-gray-200" />
             <div>
@@ -351,8 +444,7 @@
               />
               <p class="mt-2 text-xs text-gray-400">
                 ตั้งค่าจำนวนโทเค็นที่จะทำนาย
-                จำนวนโทเค็นที่น้อยลงหมายถึงการตอบสนองที่เร็วขึ้น
-                แต่อาจถูกตัดออก
+                จำนวนโทเค็นที่น้อยลงหมายถึงการตอบสนองที่เร็วขึ้น แต่อาจถูกตัดออก
                 จำนวนโทเค็นที่มากขึ้นหมายถึงการตอบสนองที่ช้าลง
                 แต่อาจสมบูรณ์มากขึ้น
               </p>
@@ -370,8 +462,7 @@
                 class="mt-1 block w-full rounded py-2 px-4 text-sm text-gray-700 bg-gray-50 outline-none"
               />
               <p class="mt-2 text-xs text-gray-400">
-                กำหนดลำดับการหยุด
-                เมื่อพบลำดับนี้ โมเดลจะหยุดสร้างข้อความ
+                กำหนดลำดับการหยุด เมื่อพบลำดับนี้ โมเดลจะหยุดสร้างข้อความ
               </p>
             </div>
 
