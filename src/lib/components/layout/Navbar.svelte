@@ -1,10 +1,20 @@
 <script lang="ts">
 	import { v4 as uuidv4 } from "uuid";
 	import { goto } from "$app/navigation";
-	import { chatId } from "$lib/stores";
+	import { chatId, chats } from "$lib/stores";
 
 	// The title of the web application
-	export let title: string = "Ollama Web UI";
+	let currentChatTitle: string = "Ollama Web UI";
+
+	$: {
+		const id = $chatId;
+		const chat = $chats.find((c) => c.id === id);
+		if (chat) {
+			currentChatTitle = chat.title;
+		} else {
+			currentChatTitle = "Ollama Web UI";
+		}
+	}
 </script>
 
 <!-- Main navigation bar -->
@@ -24,7 +34,7 @@
 			แชทใหม่
 		</button>
 		<div class="text-lg font-semibold">
-			{title != "" ? title : "Ollama Web UI"}
+			{currentChatTitle != "" ? currentChatTitle : "Ollama Web UI"}
 		</div>
 	</div>
 </nav>

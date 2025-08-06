@@ -7,7 +7,6 @@
 	import { db, chats, chatId } from "$lib/stores";
 	import { onMount } from "svelte";
 
-	// Define the onMount function to be called when the component mounts
 	let show = false;
 	let navElement;
 
@@ -34,6 +33,13 @@
 		})();
 	}
 
+	// Handle body overflow when sidebar is open/closed
+	$: if (show) {
+		document.body.style.overflow = "hidden";
+	} else {
+		document.body.style.overflow = "unset";
+	}
+
 	/**
 	 * Load a chat by its ID and navigate to the corresponding route
 	 *
@@ -53,7 +59,9 @@
 		await $db!.updateChatById(id, {
 			title: _title,
 		});
-		title = _title;
+		chats.update((currentChats) =>
+			currentChats.map((chat) => (chat.id === id ? { ...chat, title: _title } : chat))
+		);
 	};
 
 	/**
@@ -67,12 +75,19 @@
 	};
 </script>
 
+{#if show}
+	<!-- Overlay for closing the sidebar when clicking outside -->
+	<div
+		class="fixed inset-0 bg-black/50 z-30"
+		on:click={() => { show = false; }}
+	></div>
+{/if}
+
 <div
 	bind:this={navElement}
 	class="h-screen {show
 		? ''
-		: '-translate-x-[260px]'}  w-[260px] fixed top-0 left-0 z-40 transition bg-[#0a0a0a] text-gray-200 shadow-2xl text-sm
-        "
+		: '-translate-x-[260px]'}  w-[260px] fixed top-0 left-0 z-40 transition bg-[#0a0a0a] text-gray-200 shadow-2xl text-sm"
 >
 	<div class="py-2.5 my-auto flex flex-col justify-between h-screen">
 		<div class="px-2.5 flex justify-center space-x-2">
@@ -81,6 +96,7 @@
 				on:click={async () => {
 					goto("/");
 					await chatId.set(uuidv4());
+					show = false;
 				}}
 			>
 				<div class="flex self-center">
@@ -251,3 +267,4 @@
 		</button>
 	</div>
 </div>
+
