@@ -117,17 +117,17 @@
 	// Ollama functions
 	//////////////////////////
 
-	const sendPrompt = async (userPrompt, parentId, _chatId) => {
+	const sendPrompt = async (userPrompt, parentId, _chatId, contextLength) => {
 		await Promise.all(
 			selectedModels.map(async (model) => {
-				await sendPromptOllama(model, userPrompt, parentId, _chatId);
+				await sendPromptOllama(model, userPrompt, parentId, _chatId, contextLength);
 			})
 		);
 
 		await chats.set(await $db.getChats());
 	};
 
-	const sendPromptOllama = async (model, userPrompt, parentId, _chatId) => {
+	const sendPromptOllama = async (model, userPrompt, parentId, _chatId, contextLength) => {
 		console.log("sendPromptOllama");
 		let responseMessageId = uuidv4();
 		let responseMessage = {
@@ -158,6 +158,9 @@
 			},
 			body: JSON.stringify({
 				model: model,
+				           options: {
+				               num_ctx: contextLength,
+				           },
 				messages: messages.map((message) => ({
 					role: message.role,
 					content: message.content,
@@ -280,7 +283,7 @@
 		}
 	};
 
-	const submitPrompt = async (userPrompt) => {
+	const submitPrompt = async (userPrompt, contextLength) => {
 		const _chatId = JSON.parse(JSON.stringify($chatId));
 		console.log("submitPrompt", _chatId);
 
@@ -329,7 +332,7 @@
 				});
 			}, 50);
 
-			await sendPrompt(userPrompt, userMessageId, _chatId);
+			await sendPrompt(userPrompt, userMessageId, _chatId, contextLength);
 		}
 	};
 

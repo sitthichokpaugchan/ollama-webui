@@ -1,9 +1,10 @@
 <script lang="ts">
-	export let submitPrompt: Function;
-	export let stopResponse: Function;
-	export let autoScroll = true;
-	export let prompt = "";
-	export let messages = [];
+ 	import { contextLength } from "$lib/stores";
+ 	export let submitPrompt: Function;
+ 	export let stopResponse: Function;
+ 	export let autoScroll = true;
+ 	export let prompt = "";
+ 	export let messages = [];
 </script>
 
 <div class="fixed bottom-0 left-0 right-0">
@@ -31,7 +32,7 @@
 				<form
 					class="flex flex-col w-full rounded-xl border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100"
 					on:submit|preventDefault={(e) => {
-						submitPrompt(prompt);
+						submitPrompt(prompt, $contextLength);
 						prompt = "";
 						e.target.style.height = "auto";
 					}}
@@ -46,7 +47,7 @@
 								if (e.key === "Enter" && !e.shiftKey) {
 									e.preventDefault(); // Prevent default to avoid new line
 									if (prompt.trim() !== "") { // Check for non-empty prompt after trimming
-										submitPrompt(prompt);
+										submitPrompt(prompt, $contextLength);
 										prompt = ""; // Clear prompt after submission
 										e.target.style.height = "auto"; // Reset textarea height
 									}

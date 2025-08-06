@@ -2,10 +2,19 @@
 	import Modal from "../common/Modal.svelte";
 	import { OLLAMA_API_BASE_URL } from "$lib/constants";
 	import toast from "svelte-french-toast";
-	import { models } from "$lib/stores";
+	import { models, contextLength } from "$lib/stores";
 	import { splitStream } from "$lib/utils";
 	export let show = false;
 	let deleteModelTag = "";
+	  let contextLengths = ["4k", "8k", "16k", "32k", "64k", "128k"];
+	  let selectedContextLengthIndex = contextLengths.findIndex(
+	      (len) => parseInt(len) * 1000 === $contextLength
+	  );
+	  if (selectedContextLengthIndex === -1) {
+	      selectedContextLengthIndex = 0; // Fallback to 4k if current contextLength not found
+	  }
+
+	  $: contextLength.set(parseInt(contextLengths[selectedContextLengthIndex]) * 1000);
 	const deleteModelHandler = async () => {
 		const res = await fetch(`${OLLAMA_API_BASE_URL}/delete`, {
 			method: "DELETE",
@@ -151,6 +160,32 @@
 								ลบ
 							</button>
 						</div>
+					</div>
+				</div>
+			</div>
+			<div class="flex-1 md:min-h-[340px]">
+				<div class="flex flex-col space-y-3 text-sm mb-10">
+					<div>
+						<div class="mb-2.5 text-sm font-medium">
+							ความยาวบริบท
+						</div>
+						<div
+							class="mt-2 text-xs text-gray-400 dark:text-gray-500"
+						>
+							กำหนดความยาวบริบทการสนทนา LLM บนเครื่องของคุณที่สามารถจดจำและสร้างคำตอบได้
+						</div>
+						<div class="flex justify-between text-xs mt-2">
+							{#each contextLengths as length, i}
+								<span class="{selectedContextLengthIndex === i ? 'font-bold' : ''}">{length}</span>
+							{/each}
+						</div>
+						<input
+							type="range"
+							min="0"
+							max="{contextLengths.length - 1}"
+							bind:value="{selectedContextLengthIndex}"
+							class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+						/>
 					</div>
 				</div>
 			</div>

@@ -21,3 +21,4 @@ export const chats: Writable<Chat[]> = writable([]);
 export const models = writable([]);
 export const settings = writable({});
 export const showSettings = writable(false);
+export const contextLength = writable(4000); // Default to 4k tokens
