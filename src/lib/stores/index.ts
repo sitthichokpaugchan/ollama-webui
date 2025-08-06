@@ -22,3 +22,8 @@ export const models = writable([]);
 export const settings = writable({});
 export const showSettings = writable(false);
 export const contextLength = writable(4000); // Default to 4k tokens
+
+export const temperature = writable(0.8);
+export const topK = writable(40);
+export const topP = writable(0.9);
+export const repeatPenalty = writable(1.1);

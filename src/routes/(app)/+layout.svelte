@@ -112,7 +112,7 @@
 
 <div class="app relative">
 	<div
-		class="text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-800 min-h-screen overflow-auto flex flex-row pt-16 sm:pt-20"
+		class="text-gray-700 bg-white min-h-screen overflow-auto flex flex-row pt-16 sm:pt-20"
 	>
 		<Sidebar />
 		<SettingsModal bind:show={$showSettings} />

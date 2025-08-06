@@ -1,0 +1,3 @@
+body {
+    @apply text-base; /* Apply a default base font size */
+}
