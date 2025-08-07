@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 import Page from './+page.svelte';
-import { db, settings, chatId } from '$lib/stores';
+import { db, settings, chatId, chats } from '$lib/stores';
 import { tick } from 'svelte';
 import { get, writable } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -205,6 +205,7 @@ describe('+page.svelte - Chat History Management', () => {
     };
 
     get(db).getChatById.mockResolvedValueOnce(mockChat);
+    chats.set([mockChat]); // Update the chats store with the mock chat
     // fetchSpy is already set in beforeEach, it will mock the generateChatTitle fetch call
 
     chatId.set(existingChatId); // Explicitly set chatId
@@ -283,11 +284,12 @@ describe('+page.svelte - Chat History Management', () => {
     chatId.set(nonExistentChatId); // Explicitly set chatId
     await tick(); // Ensure chatId update settles
     page.set({ params: { id: nonExistentChatId } });
+    await tick(); // Ensure page store update settles
     render(Page);
-    await tick();
-    await tick(); // Additional tick to ensure reactivity settles
-    await tick(); // Third tick for deep reactivity
-    await tick();
+    await tick(); // Initial render
+    await tick(); // Allow onMount to complete
+    await tick(); // Additional tick for reactivity
+    await tick(); // More ticks to ensure all asynchronous operations complete
     await tick();
     await tick();
     await tick();

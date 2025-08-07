@@ -73,6 +73,22 @@ describe('MessageInput', () => {
     expect(submitPrompt).not.toHaveBeenCalled();
   });
 
+  it('should not call submitPrompt if the input contains only whitespace', async () => {
+    const submitPrompt = vi.fn();
+    const stopResponse = vi.fn();
+    render(MessageInput, { props: { submitPrompt, stopResponse, messages: [] } });
+    const input = screen.getByPlaceholderText('ส่งข้อความ');
+    const sendButton = screen.getByRole('button', { name: 'ส่ง' });
+
+    await fireEvent.input(input, { target: { value: '   ' } }); // Whitespace only
+    await fireEvent.click(sendButton);
+    expect(submitPrompt).not.toHaveBeenCalled();
+
+    await fireEvent.input(input, { target: { value: '  \n  ' } }); // Whitespace and newlines
+    await fireEvent.click(sendButton);
+    expect(submitPrompt).not.toHaveBeenCalled();
+  });
+
   // Scenario 3: Test stopping Response in the middle
   it('should display "Stop" button and call stopResponse when clicked if a response is in progress', async () => {
     const submitPrompt = vi.fn();
@@ -98,7 +114,6 @@ describe('MessageInput', () => {
     await fireEvent.input(input, { target: { value: 'test' } });
     await fireEvent.click(sendButton);
 
-    expect(submitPrompt).toHaveBeenCalledWith('test');
     expect(submitPrompt).toHaveBeenCalledWith('test');
     expect(input.value).toBe('');
   });

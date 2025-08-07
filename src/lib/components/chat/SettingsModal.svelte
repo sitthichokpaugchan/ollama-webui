@@ -79,10 +79,10 @@
 
 <Modal bind:show>
 	<div>
-		<div class="flex justify-between px-5 py-4 dark:text-gray-300">
+		<div class="flex justify-between px-5 py-4 text-gray-700">
 			<div class="text-lg font-medium self-center">การตั้งค่า</div>
 			<button
-				class="self-center text-sm p-1 rounded dark:hover:bg-gray-800 transition"
+				class="self-center text-sm p-1 rounded hover:bg-gray-100 transition"
 				on:click={() => {
 					show = false;
 				}}
@@ -90,7 +90,7 @@
 				ปิด
 			</button>
 		</div>
-		<hr class="border-gray-800 dark:border-gray-800" />
+		<hr class="border-gray-200" />
 		<div class="flex flex-col md:flex-row w-full p-4 md:space-x-4">
 			<div class="flex-1 md:min-h-[340px]">
 				<div class="flex flex-col space-y-3 text-sm mb-10">
@@ -99,11 +99,11 @@
 							นำเข้าโมเดล
 						</div>
 						<div
-							class="mt-2 text-xs text-gray-400 dark:text-gray-500"
+							class="mt-2 text-xs text-gray-400"
 						>
 							เพื่อเข้าถึงชื่อโมเดลที่มีให้ดาวน์โหลด
 							<a
-								class="text-gray-500 dark:text-gray-300 font-medium"
+								class="text-gray-500 font-medium"
 								href="https://ollama.ai/library"
 								target="_blank"
 							>
@@ -111,13 +111,13 @@
 							</a>
 						</div>
 					</div>
-					<hr class="border-gray-700 dark:border-gray-700" />
+					<hr class="border-gray-200" />
 					<div>
 						<div class="mb-2.5 text-sm font-medium">ลบโมเดล</div>
 						<div class="flex w-full">
 							<div class="flex-1 mr-2">
 								<select
-									class="w-full rounded py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-none"
+									class="w-full rounded py-2 px-4 text-sm text-gray-700 outline-none"
 									bind:value={deleteModelTag}
 									placeholder="เลือกโมเดล"
 								>
@@ -129,7 +129,7 @@
 									{#each $models.filter((m) => m.size != null) as model}
 										<option
 											value={model.name}
-											class="bg-gray-100 dark:bg-gray-700"
+											class="bg-gray-100"
 										>
 											{model.name +
 												" (" +

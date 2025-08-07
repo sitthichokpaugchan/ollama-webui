@@ -11,7 +11,7 @@
 		{#if autoScroll === false && messages.length > 0}
 			<div class="flex justify-center mb-4">
 				<button
-					class="bg-white border border-gray-100 dark:bg-white/20 dark:border-none p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm"
+					class="bg-white border border-gray-100 p-1.5 rounded-full hover:bg-gray-100 transition text-sm"
 					on:click={() => {
 						autoScroll = true;
 						window.scrollTo({
@@ -25,21 +25,23 @@
 			</div>
 		{/if}
 	</div>
-	<div class="bg-white dark:bg-gray-800">
+	<div class="bg-white">
 		<div class="max-w-3xl px-2.5 mx-auto">
-			<div class="bg-gradient-to-t from-white dark:from-gray-800 pb-2">
+			<div class="bg-gradient-to-t from-white pb-2">
 				<form
-					class="flex flex-col w-full rounded-xl border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100"
+					class="flex flex-col w-full rounded-xl border border-gray-200 bg-white text-gray-700"
 					on:submit|preventDefault={(e) => {
-						submitPrompt(prompt);
-						prompt = "";
-						e.target.style.height = "auto";
+						if (prompt.trim() !== "") {
+							submitPrompt(prompt);
+							prompt = "";
+							e.target.style.height = "auto";
+						}
 					}}
 				>
-					<div class="flex items-end">
+					<div class="flex items-end bg-gray-100">
 						<textarea
 							id="chat-textarea"
-							class="w-full py-3 px-4 rounded-xl resize-none bg-transparent dark:bg-gray-800 dark:text-gray-100 outline-none"
+							class="w-full py-3 px-4 rounded-xl resize-none bg-transparent text-gray-700 outline-none"
 							placeholder="ส่งข้อความ"
 							bind:value={prompt}
 							on:keypress={(e) => {
@@ -63,8 +65,8 @@
 							{#if messages.length == 0 || messages.at(-1).done == true}
 								<button
 									class="{prompt !== ''
-										? 'bg-blue-500 text-white hover:bg-blue-700 dark:bg-white dark:text-black dark:hover:bg-gray-100'
-										: 'bg-gray-100 text-white dark:bg-gray-600 dark:text-gray-800'} transition rounded-lg p-1 w-7 h-7 flex items-center justify-center text-sm"
+										? 'bg-blue-500 text-white hover:bg-blue-700'
+										: 'bg-gray-100 text-white'} transition rounded-lg p-1 w-7 h-7 flex items-center justify-center text-sm"
 									type="submit"
 									disabled={prompt === ""}
 								>
@@ -72,7 +74,7 @@
 								</button>
 							{:else}
 								<button
-									class="bg-blue-500 text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-lg p-1.5 text-sm"
+									class="bg-blue-500 text-white hover:bg-blue-700 transition rounded-lg p-1.5 text-sm"
 									on:click={stopResponse}
 								>
 									หยุด

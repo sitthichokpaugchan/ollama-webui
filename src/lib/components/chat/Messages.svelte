@@ -242,7 +242,7 @@
 {#if messages.length == 0}
 	<div class="m-auto text-center max-w-md pb-56 px-2">
 		
-		<div class="mt-2 text-2xl text-gray-800 dark:text-gray-100 font-semibold">
+		<div class="mt-2 text-2xl text-gray-800 font-semibold">
 			วันนี้ฉันจะช่วยคุณได้อย่างไร
 		</div>
 	</div>
@@ -282,23 +282,23 @@
 							<div class="w-full mt-3">
 								<div class="animate-pulse flex w-full">
 									<div class="space-y-2 w-full">
-										<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded mr-14" />
+										<div class="h-2 bg-gray-200 rounded mr-14" />
 										<div class="grid grid-cols-3 gap-4">
-											<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded col-span-2" />
-											<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded col-span-1" />
+											<div class="h-2 bg-gray-200 rounded col-span-2" />
+											<div class="h-2 bg-gray-200 rounded col-span-1" />
 										</div>
 										<div class="grid grid-cols-4 gap-4">
-											<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded col-span-1" />
-											<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded col-span-2" />
-											<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded col-span-1 mr-4" />
+											<div class="h-2 bg-gray-200 rounded col-span-1" />
+											<div class="h-2 bg-gray-200 rounded col-span-2" />
+											<div class="h-2 bg-gray-200 rounded col-span-1 mr-4" />
 										</div>
-										<div class="h-2 bg-gray-200 dark:bg-gray-600 rounded" />
+										<div class="h-2 bg-gray-200 rounded" />
 									</div>
 								</div>
 							</div>
 						{:else}
 							<div
-								class="prose w-full max-w-full dark:prose-invert prose-headings:my-0 prose-p:my-0 prose-p:-mb-4 prose-pre:my-0 prose-table:my-0 prose-blockquote:my-0 prose-img:my-0 prose-ul:-my-4 prose-ol:-my-4 prose-li:-my-3 prose-ul:-mb-6 prose-ol:-mb-6 prose-li:-mb-4 whitespace-pre-wrap"
+								class="prose w-full max-w-full prose-headings:my-0 prose-p:my-0 prose-p:-mb-4 prose-pre:my-0 prose-table:my-0 prose-blockquote:my-0 prose-img:my-0 prose-ul:-my-4 prose-ol:-my-4 prose-li:-my-3 prose-ul:-mb-6 prose-ol:-mb-6 prose-li:-mb-4 whitespace-pre-wrap"
 							>
 								{#if message.role == "user"}
 									{#if message.files}
@@ -329,7 +329,7 @@
 											/>
 											<div class="mt-2 mb-1 flex justify-center space-x-2 text-sm font-medium">
 												<button
-													class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 dark:bg-blue-500 dark:text-white dark:hover:bg-blue-700 rounded-lg transition"
+													class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg transition"
 													on:click={() => {
 														confirmEditMessage(message.id);
 													}}
@@ -337,7 +337,7 @@
 													บันทึกและส่ง
 												</button>
 												<button
-													class="px-4 py-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-100 border border-gray-200 dark:border-gray-600 rounded-lg transition"
+													class="px-4 py-2 hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-lg transition"
 													on:click={() => {
 														cancelEditMessage(message.id);
 													}}
@@ -356,7 +356,7 @@
 															on:click={() => {
 																showPreviousMessage(message);
 															}}
-															class="p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+															class="p-1 rounded hover:bg-gray-100 transition text-sm"
 														>
 															ก่อนหน้า
 														</button>
@@ -368,7 +368,7 @@
 															on:click={() => {
 																showNextMessage(message);
 															}}
-															class="p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+															class="p-1 rounded hover:bg-gray-100 transition text-sm"
 														>
 															ถัดไป
 														</button>
@@ -379,7 +379,7 @@
 															on:click={() => {
 																showPreviousMessage(message);
 															}}
-															class="p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+															class="p-1 rounded hover:bg-gray-100 transition text-sm"
 														>
 															ก่อนหน้า
 														</button>
@@ -395,14 +395,14 @@
 															on:click={() => {
 																showNextMessage(message);
 															}}
-															class="p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+															class="p-1 rounded hover:bg-gray-100 transition text-sm"
 														>
 															ถัดไป
 														</button>
 													</div>
 												{/if}
 												<button
-													class="invisible group-hover:visible p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+													class="invisible group-hover:visible p-1 rounded hover:bg-gray-100 transition text-sm"
 													on:click={() => {
 														editMessageHandler(message.id);
 													}}
@@ -434,7 +434,7 @@
 																on:click={() => {
 																	showPreviousMessage(message);
 																}}
-																class="p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+																class="p-1 rounded hover:bg-gray-100 transition text-sm"
 															>
 																ก่อนหน้า
 															</button>
@@ -447,7 +447,7 @@
 																on:click={() => {
 																	showNextMessage(message);
 																}}
-																class="p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+																class="p-1 rounded hover:bg-gray-100 transition text-sm"
 															>
 																ถัดไป
 															</button>
@@ -456,7 +456,7 @@
 													<button
 														class="{messageIdx + 1 === messages.length
 															? 'visible'
-															: 'invisible group-hover:visible'} p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+															: 'invisible group-hover:visible'} p-1 rounded hover:bg-gray-100 transition text-sm"
 														on:click={() => {
 															copyToClipboard(message.content);
 														}}
@@ -468,7 +468,7 @@
 															type="button"
 															class="{messageIdx + 1 === messages.length
 																? 'visible'
-																: 'invisible group-hover:visible'} p-1 rounded dark:hover:bg-gray-800 transition text-sm"
+																: 'invisible group-hover:visible'} p-1 rounded hover:bg-gray-100 transition text-sm"
 															on:click={regenerateResponse}
 														>
 															สร้างใหม่

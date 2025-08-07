@@ -407,7 +407,7 @@
 	}}
 />
 
-<Navbar {title} />
+<Navbar />
 <div class="min-h-screen w-full flex justify-center">
 	<div class=" py-2.5 flex flex-col justify-between w-full">
 		<div class="max-w-2xl mx-auto w-full px-3 md:px-0 mt-10">
@@ -416,7 +416,6 @@
 
 		<div class=" h-full mt-10 mb-32 w-full flex flex-col">
 			<Messages
-				{selectedModels}
 				bind:history
 				bind:messages
 				bind:autoScroll
