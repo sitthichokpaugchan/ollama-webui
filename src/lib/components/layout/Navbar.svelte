@@ -20,7 +20,7 @@
 <!-- Main navigation bar -->
 <nav
 	id="nav"
-	class="fixed top-0 flex w-screen items-center justify-between p-4 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 z-30"
+	class="fixed top-0 flex w-screen items-center justify-between p-4 bg-gray-100 text-gray-700 z-30"
 >
 	<div class="container mx-auto flex items-center justify-between">
 		<button

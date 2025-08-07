@@ -37,7 +37,7 @@
 			</select>
 
 			<button
-				class=" self-center dark:hover:text-gray-300"
+				class=" self-center hover:text-gray-700"
 				on:click={async () => {
 					await showSettings.set(true);
 				}}
