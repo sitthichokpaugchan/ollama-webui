@@ -1,0 +1,139 @@
+// นำเข้าฟังก์ชัน v4 จากไลบรารี uuid เพื่อสร้าง ID ที่ไม่ซ้ำกัน
+import { v4 as uuidv4 } from "uuid";
+
+// ฟังก์ชันช่วยเหลือ
+
+/**
+ * สร้าง TransformStream ใหม่ที่แบ่งสตรีมอินพุตตามตัวคั่นที่ระบุ
+ *
+ * @param {string} splitOn - ตัวคั่นที่จะใช้แบ่งสตรีมอินพุต
+ */
+export const splitStream = (splitOn) => {
+	// เริ่มต้นบัฟเฟอร์ว่างเพื่อเก็บส่วนของข้อมูล
+	let buffer = "";
+
+	// ส่งคืน TransformStream ใหม่ที่แบ่งสตรีมอินพุต
+	return new TransformStream({
+		/**
+		 * ฟังก์ชัน transform จะถูกเรียกสำหรับแต่ละส่วนของข้อมูลในสตรีมอินพุต
+		 *
+		 * @param {Buffer} chunk - ส่วนของข้อมูลปัจจุบัน
+		 * @param {AbortController} controller - AbortController ที่ใช้ในการยกเลิกสตรีม
+		 */
+		transform(chunk, controller) {
+			// ต่อส่วนของข้อมูลปัจจุบันเข้ากับบัฟเฟอร์
+			buffer += chunk;
+
+			// แบ่งบัฟเฟอร์ออกเป็นส่วนๆ ตามตัวคั่น
+			const parts = buffer.split(splitOn);
+
+			// นำแต่ละส่วนในสตรีมเอาต์พุต ยกเว้นส่วนสุดท้าย
+			parts.slice(0, -1).forEach((part) => controller.enqueue(part));
+
+			// อัปเดตบัฟเฟอร์ให้เป็นส่วนสุดท้าย
+			buffer = parts[parts.length - 1];
+		},
+
+		/**
+		 * ฟังก์ชัน flush จะถูกเรียกเมื่อไม่มีส่วนของข้อมูลในสตรีมอินพุตอีกต่อไป
+		 *
+		 * @param {AbortController} controller - AbortController ที่ใช้ในการยกเลิกสตรีม
+		 */
+		flush(controller) {
+			// นำข้อมูลบัฟเฟอร์ที่เหลืออยู่ออกมา
+			if (buffer) controller.enqueue(buffer);
+		}
+	});
+};
+
+/**
+ * แปลงอาร์เรย์ของข้อความให้เป็นโครงสร้างแบบต้นไม้ที่แต่ละข้อความมี ID ลูก
+ *
+ * @param {object[]} messages - อาร์เรย์ของข้อความที่จะแปลง
+ * @returns {object} โครงสร้างแบบต้นไม้ของข้อความที่แปลงแล้ว
+ */
+export const convertMessagesToHistory = (messages) => {
+	// เริ่มต้นอ็อบเจ็กต์ history ด้วยอ็อบเจ็กต์ messages ที่ว่างเปล่าและ ID ปัจจุบันเป็น null
+	let history = {
+		messages: {},
+		currentId: null
+	};
+
+	// เริ่มต้นตัวแปรเพื่อติดตาม ID ของพาเรนต์และลูก
+	let parentMessageId = null;
+	let messageId = null;
+
+	// วนซ้ำแต่ละข้อความในอาร์เรย์อินพุต
+	for (const message of messages) {
+		// สร้าง ID ใหม่สำหรับข้อความ
+		messageId = uuidv4();
+
+		// หากมีข้อความพาเรนต์ ให้เพิ่ม ID ของข้อความปัจจุบันลงในรายการ ID ลูกของพาเรนต์
+		if (parentMessageId !== null) {
+			history.messages[parentMessageId].childrenIds = [
+				...history.messages[parentMessageId].childrenIds,
+				messageId
+			];
+		}
+
+		// สร้างอ็อบเจ็กต์ข้อความใหม่ด้วย ID ที่สร้างขึ้นและเพิ่มลงในอ็อบเจ็กต์ messages
+		history.messages[messageId] = {
+			...message,
+			id: messageId,
+			parentId: parentMessageId,
+			childrenIds: []
+		};
+
+		// อัปเดต ID ของพาเรนต์ให้เป็น ID ของข้อความปัจจุบัน
+		parentMessageId = messageId;
+	}
+
+	// ตั้งค่า ID ปัจจุบันของอ็อบเจ็กต์ history เป็น ID ที่สร้างขึ้นล่าสุด
+	history.currentId = messageId;
+
+	// ส่งคืนโครงสร้างแบบต้นไม้ของข้อความที่แปลงแล้ว
+	return history;
+};
+
+/**
+ * คัดลอกข้อความไปยังคลิปบอร์ดโดยใช้ navigator.clipboard API หรือวิธีสำรอง
+ *
+ * @param {string} text - ข้อความที่จะคัดลอกไปยังคลิปบอร์ด
+ */
+const copyToClipboard = (text) => {
+	if (!navigator.clipboard) {
+		// สร้างองค์ประกอบ textarea ชั่วคราวเพื่อเก็บข้อความที่จะคัดลอก
+		var textArea = document.createElement("textarea");
+		textArea.value = text;
+
+		// หลีกเลี่ยงการเลื่อนไปที่ด้านล่างและจัดตำแหน่ง textarea คงที่ที่ด้านบนซ้ายของหน้า
+		textArea.style.top = "0";
+		textArea.style.left = "0";
+		textArea.style.position = "fixed";
+
+		document.body.appendChild(textArea);
+		textArea.focus();
+		textArea.select();
+
+		try {
+			// ลองคัดลอกข้อความโดยใช้ navigator.clipboard API
+			var successful = document.execCommand("copy");
+			var msg = successful ? "successful" : "unsuccessful";
+			console.log("Copying text command was " + msg);
+		} catch (err) {
+			// หาก navigator.clipboard API ล้มเหลว ให้ลองใช้วิธีสำรองในการคัดลอกข้อความ
+			console.error("Unable to copy", err);
+		}
+
+		document.body.removeChild(textArea);
+		return;
+	}
+	navigator.clipboard.writeText(text).then(
+		function () {
+			console.log("Copying to clipboard was successful");
+		},
+		function (err) {
+			console.error("Could not copy text: ", err);
+		}
+	);
+};
