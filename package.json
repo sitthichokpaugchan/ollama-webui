@@ -1,6 +1,6 @@
 {
 	"name": "ollama-webui",
-	"version": "1.0",
+	"version": "1.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev --host --port 3000",
@@ -44,5 +44,5 @@
 		"tippy.js": "^6.3.7",
 		"uuid": "^9.0.1"
 	},
-	"packageManager": "pnpm@8.3.0+sha1.89539ffc465f543c7d45c7b618b7db6981e66c7c"
+	"packageManager": "pnpm@10.15.0"
 }
