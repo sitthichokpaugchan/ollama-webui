@@ -1,5 +1,4 @@
 <script lang="ts">
-  // นำเข้าไลบรารีและคอมโพเนนต์ที่จำเป็น
   import { marked } from "marked";
   import { v4 as uuidv4 } from "uuid";
   import hljs from "highlight.js";
@@ -295,7 +294,7 @@
               />
             {:else}
               <img
-                src="/ollama.png"
+                src="/favicon.png"
                 class="w-7 h-7 object-cover rounded-full"
                 alt="Ollama profile"
                 draggable="false"
@@ -308,17 +307,29 @@
               {#if message.role === "user"}
                 คุณ
               {:else}
-                Ollama <span class="text-gray-500 font-medium"
+                Ollama <span class="text-gray-500 text-sm font-medium"
                   >{message.model ? ` ${message.model}` : ""}</span
                 >
               {/if}
             </div>
             <!-- แสดงสถานะกำลังโหลด -->
             {#if message.role !== "user" && message.content === ""}
-              <div class="flex flex-col gap-2 w-full mt-3">
-                <div class="w-full h-4 bg-gray-300 rounded animate-pulse" />
-                <div class="w-5/6 h-4 bg-gray-300 rounded animate-pulse" />
-                <div class="w-4/5 h-4 bg-gray-300 rounded animate-pulse" />
+              <div class="w-full mt-3">
+                <div class="animate-pulse flex w-full">
+                  <div class="space-y-2 w-full">
+                    <div class="h-2 bg-gray-200 rounded mr-14" />
+                    <div class="grid grid-cols-3 gap-4">
+                      <div class="h-2 bg-gray-200 rounded col-span-2" />
+                      <div class="h-2 bg-gray-200 rounded col-span-1" />
+                    </div>
+                    <div class="grid grid-cols-4 gap-4">
+                      <div class="h-2 bg-gray-200 rounded col-span-1" />
+                      <div class="h-2 bg-gray-200 rounded col-span-2" />
+                      <div class="h-2 bg-gray-200 rounded col-span-1 mr-4" />
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded" />
+                  </div>
+                </div>
               </div>
             {:else}
               <div
@@ -354,7 +365,7 @@
                         }}
                       />
                       <div
-                        class="mt-2 mb-1 flex justify-center space-x-2 font-medium"
+                        class="mt-2 mb-1 flex justify-center space-x-2 text-sm font-medium"
                       >
                         <button
                           class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg transition"
@@ -387,7 +398,7 @@
                               on:click={() => {
                                 showPreviousMessage(message);
                               }}
-                              class="p-1 rounded hover:bg-gray-100 transition"
+                              class="p-1 rounded hover:bg-gray-100 transition text-sm"
                             >
                               ก่อนหน้า
                             </button>
@@ -401,7 +412,7 @@
                               on:click={() => {
                                 showNextMessage(message);
                               }}
-                              class="p-1 rounded hover:bg-gray-100 transition"
+                              class="p-1 rounded hover:bg-gray-100 transition text-sm"
                             >
                               ถัดไป
                             </button>
@@ -412,7 +423,7 @@
                               on:click={() => {
                                 showPreviousMessage(message);
                               }}
-                              class="p-1 rounded hover:bg-gray-100 transition"
+                              class="p-1 rounded hover:bg-gray-100 transition text-sm"
                             >
                               ก่อนหน้า
                             </button>
@@ -429,14 +440,14 @@
                               on:click={() => {
                                 showNextMessage(message);
                               }}
-                              class="p-1 rounded hover:bg-gray-100 transition"
+                              class="p-1 rounded hover:bg-gray-100 transition text-sm"
                             >
                               ถัดไป
                             </button>
                           </div>
                         {/if}
                         <button
-                          class="invisible group-hover:visible p-1 rounded hover:bg-gray-100 transition"
+                          class="invisible group-hover:visible p-1 rounded hover:bg-gray-100 transition text-sm"
                           on:click={() => {
                             editMessageHandler(message.id);
                           }}
@@ -471,7 +482,7 @@
                                 on:click={() => {
                                   showPreviousMessage(message);
                                 }}
-                                class="p-1 rounded hover:bg-gray-100 transition"
+                                class="p-1 rounded hover:bg-gray-100 transition text-sm"
                               >
                                 ก่อนหน้า
                               </button>
@@ -486,7 +497,7 @@
                                 on:click={() => {
                                   showNextMessage(message);
                                 }}
-                                class="p-1 rounded hover:bg-gray-100 transition"
+                                class="p-1 rounded hover:bg-gray-100 transition text-sm"
                               >
                                 ถัดไป
                               </button>
@@ -495,7 +506,7 @@
                           <button
                             class="{messageIdx + 1 === messages.length
                               ? 'visible'
-                              : 'invisible group-hover:visible'} p-1 rounded hover:bg-gray-100 transition"
+                              : 'invisible group-hover:visible'} p-1 rounded hover:bg-gray-100 transition text-sm"
                             on:click={() => {
                               copyToClipboard(message.content);
                             }}
@@ -507,7 +518,7 @@
                               type="button"
                               class="{messageIdx + 1 === messages.length
                                 ? 'visible'
-                                : 'invisible group-hover:visible'} p-1 rounded hover:bg-gray-100 transition"
+                                : 'invisible group-hover:visible'} p-1 rounded hover:bg-gray-100 transition text-sm"
                               on:click={regenerateResponse}
                             >
                               สร้างใหม่

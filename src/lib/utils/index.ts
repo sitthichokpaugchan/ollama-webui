@@ -96,17 +96,16 @@ export const convertMessagesToHistory = (messages) => {
 };
 
 /**
- * คัดลอกข้อความไปยังคลิปบอร์ดโดยใช้ navigator.clipboard API หรือวิธีสำรอง
+ * คัดลอกข้อความไปยังคลิปบอร์ดโดยใช้ navigator.clipboard API
  *
  * @param {string} text - ข้อความที่จะคัดลอกไปยังคลิปบอร์ด
  */
+// คัดลอกข้อความไปยังคลิปบอร์ด
 const copyToClipboard = (text) => {
 	if (!navigator.clipboard) {
-		// สร้างองค์ประกอบ textarea ชั่วคราวเพื่อเก็บข้อความที่จะคัดลอก
 		var textArea = document.createElement("textarea");
 		textArea.value = text;
 
-		// หลีกเลี่ยงการเลื่อนไปที่ด้านล่างและจัดตำแหน่ง textarea คงที่ที่ด้านบนซ้ายของหน้า
 		textArea.style.top = "0";
 		textArea.style.left = "0";
 		textArea.style.position = "fixed";
@@ -116,13 +115,11 @@ const copyToClipboard = (text) => {
 		textArea.select();
 
 		try {
-			// ลองคัดลอกข้อความโดยใช้ navigator.clipboard API
 			var successful = document.execCommand("copy");
-			var msg = successful ? "successful" : "unsuccessful";
-			console.log("Copying text command was " + msg);
+			var msg = successful ? "ประสบความสำเร็จ" : "ไม่สำเร็จ";
+			console.log("การคัดลอก" + msg);
 		} catch (err) {
-			// หาก navigator.clipboard API ล้มเหลว ให้ลองใช้วิธีสำรองในการคัดลอกข้อความ
-			console.error("Unable to copy", err);
+			console.error("ไม่สามารถคัดลอกได้", err);
 		}
 
 		document.body.removeChild(textArea);
@@ -130,10 +127,10 @@ const copyToClipboard = (text) => {
 	}
 	navigator.clipboard.writeText(text).then(
 		function () {
-			console.log("Copying to clipboard was successful");
+			console.log("คัดลอกไปยังคลิปบอร์ดแล้ว");
 		},
 		function (err) {
-			console.error("Could not copy text: ", err);
+			console.error("ไม่สามารถคัดลอกข้อความ: ", err);
 		}
 	);
 };

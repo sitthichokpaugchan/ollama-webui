@@ -1,9 +1,7 @@
 <script lang="ts">
-  // นำเข้า stores และ toast
   import { models, showSettings, settings } from "$lib/stores";
   import toast from "svelte-french-toast";
 
-  // props ที่รับเข้ามา
   export let selectedModels = [""];
   export let disabled = false;
 
@@ -54,6 +52,6 @@
 </div>
 
 <!-- ปุ่มสำหรับบันทึกโมเดลเริ่มต้น -->
-<div class="text-left mt-1.5 text-gray-500">
+<div class="text-left mt-1.5 text-xs text-gray-500">
   <button on:click={saveDefaultModel}> ตั้งเป็นค่าเริ่มต้น</button>
 </div>

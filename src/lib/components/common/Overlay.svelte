@@ -31,7 +31,7 @@
         </div>
 
         {#if content !== ""}
-          <div class="text-center text-gray-100 font-medium z-50">
+          <div class="text-center text-gray-100 text-xs font-medium z-50">
             {content}
           </div>
         {/if}

@@ -1,5 +1,4 @@
 <script lang="ts">
-  // นำเข้า Modal component, ค่าคงที่, toast, stores และ utility function
   import Modal from "../common/Modal.svelte";
   import { OLLAMA_API_BASE_URL } from "$lib/constants";
   import toast from "svelte-french-toast";
@@ -83,7 +82,7 @@
         if ("detail" in error) {
           toast.error(error.detail);
         } else {
-          toast.error("ไม่สามารถเชื่อมต่อ Ollama ได้\nโปรดตรวจสอบว่า Ollama กำลังทำงานอยู่บน http://localhost:11434");
+          toast.error("การเชื่อมต่อเซิร์ฟเวอร์ล้มเหลว");
         }
         return null;
       });
@@ -100,7 +99,7 @@
     <div class="flex justify-between px-5 py-4 text-gray-700">
       <div class="text-lg font-medium self-center">การตั้งค่า</div>
       <button
-        class="self-center p-1 rounded hover:bg-gray-100 transition"
+        class="self-center text-sm p-1 rounded hover:bg-gray-100 transition"
         on:click={() => {
           show = false;
         }}
@@ -113,15 +112,15 @@
     <!-- ส่วนเนื้อหาของ Modal -->
     <div class="flex flex-col md:flex-row w-full p-4 md:space-x-4">
       <div class="flex-1 md:min-h-[340px]">
-        <div class="flex flex-col space-y-3 mb-10">
+        <div class="flex flex-col space-y-3 text-sm mb-10">
           <!-- ส่วนของการนำเข้าโมเดล -->
           <div>
-            <div class="mb-2.5 font-medium">นำเข้าโมเดล</div>
-            <div class="mt-2 text-gray-400">
+            <div class="mb-2.5 text-sm font-medium">นำเข้าโมเดล</div>
+            <div class="mt-2 text-xs text-gray-400">
               เพื่อเข้าถึงชื่อโมเดลที่มีให้ดาวน์โหลด
               <a
                 class="text-gray-500 font-medium"
-                href="https://ollama.com/library"
+                href="https://ollama.ai/library"
                 target="_blank"
               >
                 คลิกที่นี่
@@ -132,11 +131,11 @@
 
           <!-- ส่วนของการลบโมเดล -->
           <div>
-            <div class="mb-2.5 font-medium">ลบโมเดล</div>
+            <div class="mb-2.5 text-sm font-medium">ลบโมเดล</div>
             <div class="flex w-full">
               <div class="flex-1 mr-2">
                 <select
-                  class="w-full rounded py-2 px-4 text-gray-700 outline-none"
+                  class="w-full rounded py-2 px-4 text-sm text-gray-700 outline-none"
                   bind:value={deleteModelTag}
                   placeholder="เลือกโมเดล"
                 >
@@ -154,7 +153,7 @@
                 </select>
               </div>
               <button
-                class="px-3 bg-red-500 hover:bg-red-700 text-white rounded-lg transition flex items-center"
+                class="px-3 bg-red-500 hover:bg-red-700 text-white rounded-lg transition flex items-center text-sm"
                 on:click={() => {
                   deleteModelHandler();
                 }}

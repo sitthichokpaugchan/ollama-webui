@@ -1,4 +1,3 @@
-// นำเข้าฟังก์ชันที่จำเป็นสำหรับการทดสอบ
 import { describe, it, expect } from 'vitest';
 import { splitStream } from './index';
 

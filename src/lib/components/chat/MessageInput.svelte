@@ -1,5 +1,4 @@
 <script lang="ts">
-  // พร็อพสำหรับส่ง prompt, หยุดการตอบสนอง, การเลื่อนอัตโนมัติ, prompt ปัจจุบัน และรายการข้อความ
   export let submitPrompt: Function;
   export let stopResponse: Function;
   export let autoScroll = true;
@@ -14,7 +13,7 @@
     {#if autoScroll === false && messages.length > 0}
       <div class="flex justify-center mb-4">
         <button
-          class="bg-white border border-gray-100 p-1.5 rounded-full hover:bg-gray-100 transition"
+          class="bg-white border border-gray-100 p-1.5 rounded-full hover:bg-gray-100 transition text-sm"
           on:click={() => {
             autoScroll = true;
             window.scrollTo({
@@ -73,7 +72,7 @@
                 <button
                   class="{prompt !== ''
                     ? 'bg-blue-500 text-white hover:bg-blue-700'
-                    : 'bg-gray-100 text-white'} transition rounded-lg p-1 w-7 h-7 flex items-center justify-center"
+                    : 'bg-gray-100 text-white'} transition rounded-lg p-1 w-7 h-7 flex items-center justify-center text-sm"
                   type="submit"
                   disabled={prompt === ""}
                 >
@@ -81,7 +80,7 @@
                 </button>
               {:else}
                 <button
-                  class="bg-blue-500 text-white hover:bg-blue-700 transition rounded-lg p-1.5"
+                  class="bg-blue-500 text-white hover:bg-blue-700 transition rounded-lg p-1.5 text-sm"
                   on:click={stopResponse}
                 >
                   หยุด
@@ -91,7 +90,7 @@
           </div>
         </form>
         <!-- ข้อความเตือน -->
-        <div class="mt-1.5 text-gray-500 text-center">
+        <div class="mt-1.5 text-xs text-gray-500 text-center">
           LLM สามารถทำผิดพลาดได้ ตรวจสอบข้อมูลที่สำคัญ
         </div>
       </div>

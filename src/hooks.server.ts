@@ -12,7 +12,8 @@ const cors = async ({ event, resolve }) => {
     "Content-Type, Authorization",
   );
 
-  // Handle preflight requests
+  // จัดการคำขอ preflight
+
   if (event.request.method === "OPTIONS") {
     return new Response(null, {
       headers: {

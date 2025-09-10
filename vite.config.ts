@@ -1,6 +1,4 @@
-// นำเข้าปลั๊กอิน sveltekit จาก @sveltejs/kit/vite
 import { sveltekit } from "@sveltejs/kit/vite";
-// นำเข้า defineConfig และ mergeConfig จาก vite
 import { defineConfig, mergeConfig } from "vite";
 
 // การตั้งค่าพื้นฐานสำหรับ Vite

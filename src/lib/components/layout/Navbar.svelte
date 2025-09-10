@@ -1,12 +1,9 @@
 <script lang="ts">
   // นำเข้า v4 as uuidv4 จาก uuid สำหรับการสร้าง ID ที่ไม่ซ้ำกัน
   import { v4 as uuidv4 } from "uuid";
-  // นำเข้า goto จาก $app/navigation สำหรับการเปลี่ยนหน้า
   import { goto } from "$app/navigation";
-  // นำเข้า chatId และ chats จาก $lib/stores
   import { chatId, chats } from "$lib/stores";
 
-  // หัวข้อของเว็บแอปพลิเคชัน
   let currentChatTitle: string = "Ollama Web UI";
 
   // บล็อกโค้ดที่จะทำงานเมื่อ $chatId หรือ $chats เปลี่ยนแปลง

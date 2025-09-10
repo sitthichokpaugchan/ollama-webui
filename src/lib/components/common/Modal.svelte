@@ -1,13 +1,8 @@
 <script lang="ts">
-  // นำเข้า onMount จาก svelte
   import { onMount } from "svelte";
-  // นำเข้า fade transition จาก svelte/transition
   import { fade } from "svelte/transition";
-  // export ตัวแปร show เพื่อรับค่าจากภายนอก
   export let show = false;
-  // ตัวแปร mounted เพื่อตรวจสอบว่า component ถูก mount แล้วหรือยัง
   let mounted = false;
-  // เมื่อ component ถูก mount แล้วให้ตั้งค่า mounted เป็น true
   onMount(() => {
     mounted = true;
   });

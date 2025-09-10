@@ -18,7 +18,7 @@
 หลังจากติดตั้ง Ollama แล้ว คุณสามารถดาวน์โหลดโมเดลที่คุณต้องการใช้ได้ เช่น:
 
 ```bash
-ollama pull gemma3:1b
+ollama pull gemma3
 ```
 
 ### 2. ติดตั้ง Ollama Web UI
@@ -39,14 +39,14 @@ ollama pull gemma3:1b
    ```bash
    npm install
    # หรือ
-   yarn install
+   pnpm install
    ```
 
 3. **รันแอปพลิเคชัน:**
    ```bash
    npm run dev
    # หรือ
-   yarn dev
+   pnpm dev
    ```
 
 หลังจากรันคำสั่งนี้ แอปพลิเคชันจะเริ่มทำงานบน `http://localhost:3000` (หรือพอร์ตอื่นที่ระบุ) คุณสามารถเปิดเบราว์เซอร์และเข้าถึง UI ได้ทันที

@@ -1,5 +1,4 @@
 <script lang="ts">
-  // นำเข้าไลบรารีและคอมโพเนนต์ที่จำเป็น
   import { v4 as uuidv4 } from "uuid";
   import { openDB } from "idb";
   import { onMount, tick } from "svelte";
@@ -36,7 +35,7 @@
         if ("detail" in error) {
           toast.error(error.detail);
         } else {
-          toast.error("ไม่สามารถเชื่อมต่อ Ollama ได้\nโปรดตรวจสอบว่า Ollama กำลังทำงานอยู่บน http://localhost:11434");
+          toast.error("การเชื่อมต่อเซิร์ฟเวอร์ล้มเหลว");
         }
         return null;
       });

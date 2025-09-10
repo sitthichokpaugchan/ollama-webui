@@ -1,5 +1,4 @@
 <script lang="ts">
-  // นำเข้าไลบรารีและคอมโพเนนต์ที่จำเป็น
   import { v4 as uuidv4 } from "uuid";
   import toast from "svelte-french-toast";
 
@@ -87,7 +86,6 @@
       var textArea = document.createElement("textarea");
       textArea.value = text;
 
-      // Avoid scrolling to bottom
       textArea.style.top = "0";
       textArea.style.left = "0";
       textArea.style.position = "fixed";
@@ -98,10 +96,10 @@
 
       try {
         var successful = document.execCommand("copy");
-        var msg = successful ? "successful" : "unsuccessful";
-        console.log("Copying text command was " + msg);
+        var msg = successful ? "ประสบความสำเร็จ": "ไม่สำเร็จ";
+        console.log("การคัดลอก" + msg);
       } catch (err) {
-        console.error("Unable to copy", err);
+        console.error("ไม่สามารถคัดลอกได้", err);
       }
 
       document.body.removeChild(textArea);
@@ -109,10 +107,10 @@
     }
     navigator.clipboard.writeText(text).then(
       function () {
-        console.log("Copying to clipboard was successful");
+        console.log("คัดลอกไปยังคลิปบอร์ดแล้ว");
       },
       function (err) {
-        console.error("Could not copy text: ", err);
+        console.error("ไม่สามารถคัดลอกข้อความ: ", err);
       }
     );
   };
@@ -261,11 +259,11 @@
         }
       } else {
         toast.error(`เกิดปัญหาในการเชื่อมต่อกับ Ollama`);
-        responseMessage.content = `ไม่สามารถเชื่อมต่อ Ollama ได้\nโปรดตรวจสอบว่า Ollama กำลังทำงานอยู่บน http://localhost:11434`;
+        responseMessage.content = `เกิดปัญหาในการเชื่อมต่อกับ Ollama`;
       }
 
       responseMessage.error = true;
-      responseMessage.content = `ไม่สามารถเชื่อมต่อ Ollama ได้\nโปรดตรวจสอบว่า Ollama กำลังทำงานอยู่บน http://localhost:11434`;
+      responseMessage.content = `เกิดปัญหาในการเชื่อมต่อกับ Ollama`;
       responseMessage.done = true;
       messages = messages;
     }
@@ -368,7 +366,7 @@
         },
         body: JSON.stringify({
           model: selectedModels[0],
-          prompt: `สร้างหัวข้อตรงตามภาษาเขา ไม่เกิน 10 คำ และไม่รวมคำนำหน้า จากนั้นโปรดตอบกลับโดยใช้หัวข้อเท่านั้น: ${userPrompt}`,
+          prompt: `Generate a brief 3-5 word title for this question, excluding the term 'title.' Then, please reply with only the title: ${userPrompt}`,
           stream: false,
         }),
       })

@@ -90,7 +90,7 @@
   bind:this={navElement}
   class="h-screen {show
     ? ''
-    : '-translate-x-[260px]'}  w-[260px] fixed top-0 left-0 z-40 transition bg-white text-gray-800 shadow-2xl"
+    : '-translate-x-[260px]'}  w-[260px] fixed top-0 left-0 z-40 transition bg-white text-gray-800 shadow-2xl text-sm"
 >
   <div class="flex flex-col h-screen">
     <div class="px-2.5 pt-2.5 flex justify-center space-x-2">
@@ -103,7 +103,7 @@
         }}
       >
         <div class="flex self-center">
-          <div class=" self-center font-medium">แชทใหม่</div>
+          <div class=" self-center font-medium text-sm">แชทใหม่</div>
         </div>
       </button>
     </div>
@@ -111,7 +111,7 @@
     <div class="px-2.5 mt-1 mb-2 flex justify-center space-x-2">
       <div class="flex w-full">
         <input
-          class="w-full rounded-r py-1.5 pl-2.5 pr-4 text-gray-700 bg-gray-100 outline-none"
+          class="w-full rounded-r py-1.5 pl-2.5 pr-4 text-sm text-gray-700 bg-gray-100 outline-none"
           placeholder="ค้นหา"
           bind:value={search}
         />
