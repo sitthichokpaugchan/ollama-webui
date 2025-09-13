@@ -134,20 +134,3 @@
     <slot />
   </div>
 </div>
-
-<style>
-  .loading {
-    @apply inline-block animate-[loading_1s_steps_3_infinite];
-    letter-spacing: -0.5px;
-  }
-
-  @keyframes loading {
-    to {
-      clip-path: inset(0 -1ch 0 0);
-    }
-  }
-
-  pre[class*="language-"] {
-    @apply relative overflow-auto my-2 p-4 rounded-lg;
-  }
-</style>
