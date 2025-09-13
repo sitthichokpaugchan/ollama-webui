@@ -6,10 +6,9 @@
   import auto_render from "katex/dist/contrib/auto-render.mjs";
   import "katex/dist/katex.min.css";
   import { chatId } from "$lib/stores";
+  import { copyToClipboard } from "$lib/utils";
   import { tick } from "svelte";
-  import toast from "svelte-french-toast";
 
-  // พร็อพที่ส่งเข้ามา
   export let sendPrompt: Function;
   export let regenerateResponse: Function;
   export let bottomPadding = false;
@@ -108,38 +107,6 @@
         throwOnError: false,
       });
     }
-  };
-
-  // ฟังก์ชันสำหรับคัดลอกข้อความไปยังคลิปบอร์ด
-  const copyToClipboard = (text) => {
-    if (!navigator.clipboard) {
-      var textArea = document.createElement("textarea");
-      ttextArea.value = text;
-      ttextArea.style.top = "0";
-      ttextArea.style.left = "0";
-      ttextArea.style.position = "fixed";
-      document.body.appendChild(textArea);
-      ttextArea.focus();
-      ttextArea.select();
-      try {
-        var successful = document.execCommand("copy");
-        var msg = successful ? "successful" : "unsuccessful";
-        console.log("Copying text command was " + msg);
-      } catch (err) {
-        console.error("Unable to copy", err);
-      }
-      document.body.removeChild(textArea);
-      return;
-    }
-    navigator.clipboard.writeText(text).then(
-      function () {
-        console.log("Copying to clipboard was successful");
-        toast.success("คัดลอกไปยังคลิปบอร์ดแล้ว");
-      },
-      function (err) {
-        console.error("Could not copy text: ", err);
-      }
-    );
   };
 
   // ฟังก์ชันสำหรับจัดการการแก้ไขข้อความ

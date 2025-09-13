@@ -1,5 +1,4 @@
 <script lang="ts">
-  // นำเข้า v4 as uuidv4 จาก uuid สำหรับการสร้าง ID ที่ไม่ซ้ำกัน
   import { v4 as uuidv4 } from "uuid";
   import { goto } from "$app/navigation";
   import { chatId, chats } from "$lib/stores";
@@ -30,7 +29,7 @@
     <button
       class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg transition"
       on:click={async () => {
-        console.log("newChat");
+        console.log("แชทใหม่");
         // ไปที่หน้าแรก
         goto("/");
         // ตั้งค่า chatId ใหม่

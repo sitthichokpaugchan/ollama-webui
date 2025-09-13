@@ -109,7 +109,6 @@
     };
   };
 
-  // เมื่อคอมโพเนนต์ถูก mount
   onMount(async () => {
     // โหลดการตั้งค่าจาก localStorage
     await settings.set(JSON.parse(localStorage.getItem("settings") ?? "{}"));

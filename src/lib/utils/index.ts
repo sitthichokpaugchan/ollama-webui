@@ -1,8 +1,6 @@
 // นำเข้าฟังก์ชัน v4 จากไลบรารี uuid เพื่อสร้าง ID ที่ไม่ซ้ำกัน
 import { v4 as uuidv4 } from "uuid";
 
-// ฟังก์ชันช่วยเหลือ
-
 /**
  * สร้าง TransformStream ใหม่ที่แบ่งสตรีมอินพุตตามตัวคั่นที่ระบุ
  *
@@ -35,7 +33,7 @@ export const splitStream = (splitOn) => {
 		},
 
 		/**
-		 * ฟังก์ชัน flush จะถูกเรียกเมื่อไม่มีส่วนของข้อมูลในสตรีมอินพุตอีกต่อไป
+		 * ฟังก์ชัน flush จะถูกเรียกเมื่อไม่มีส่วนของข้อมูลในสตรีมอินพุตแล้ว
 		 *
 		 * @param {AbortController} controller - AbortController ที่ใช้ในการยกเลิกสตรีม
 		 */
@@ -47,23 +45,20 @@ export const splitStream = (splitOn) => {
 };
 
 /**
- * แปลงอาร์เรย์ของข้อความให้เป็นโครงสร้างแบบต้นไม้ที่แต่ละข้อความมี ID ลูก
+ * แปลงอาร์เรย์ของข้อความให้เป็นโครงสร้างที่แต่ละข้อความมี ID ลูก
  *
  * @param {object[]} messages - อาร์เรย์ของข้อความที่จะแปลง
- * @returns {object} โครงสร้างแบบต้นไม้ของข้อความที่แปลงแล้ว
+ * @returns {object} โครงสร้างของข้อความที่แปลงแล้ว
  */
 export const convertMessagesToHistory = (messages) => {
-	// เริ่มต้นอ็อบเจ็กต์ history ด้วยอ็อบเจ็กต์ messages ที่ว่างเปล่าและ ID ปัจจุบันเป็น null
 	let history = {
 		messages: {},
 		currentId: null
 	};
 
-	// เริ่มต้นตัวแปรเพื่อติดตาม ID ของพาเรนต์และลูก
 	let parentMessageId = null;
 	let messageId = null;
 
-	// วนซ้ำแต่ละข้อความในอาร์เรย์อินพุต
 	for (const message of messages) {
 		// สร้าง ID ใหม่สำหรับข้อความ
 		messageId = uuidv4();
@@ -84,14 +79,11 @@ export const convertMessagesToHistory = (messages) => {
 			childrenIds: []
 		};
 
-		// อัปเดต ID ของพาเรนต์ให้เป็น ID ของข้อความปัจจุบัน
 		parentMessageId = messageId;
 	}
 
-	// ตั้งค่า ID ปัจจุบันของอ็อบเจ็กต์ history เป็น ID ที่สร้างขึ้นล่าสุด
 	history.currentId = messageId;
 
-	// ส่งคืนโครงสร้างแบบต้นไม้ของข้อความที่แปลงแล้ว
 	return history;
 };
 
@@ -101,7 +93,7 @@ export const convertMessagesToHistory = (messages) => {
  * @param {string} text - ข้อความที่จะคัดลอกไปยังคลิปบอร์ด
  */
 // คัดลอกข้อความไปยังคลิปบอร์ด
-const copyToClipboard = (text) => {
+export const copyToClipboard = (text) => {
 	if (!navigator.clipboard) {
 		var textArea = document.createElement("textarea");
 		textArea.value = text;

@@ -1,8 +1,5 @@
 <script lang="ts">
-  // นำเข้าฟังก์ชัน v4 จากแพ็คเกจ uuid สำหรับสร้าง ID ที่ไม่ซ้ำกัน
   import { v4 as uuidv4 } from "uuid";
-
-  // นำเข้าฟังก์ชันการนำทางและที่เก็บข้อมูลที่จำเป็น
   import { goto } from "$app/navigation";
   import { db, chats, chatId } from "$lib/stores";
   import { onMount } from "svelte";
@@ -17,9 +14,7 @@
   let chatTitleEditId: string | null = null;
   let chatTitle = "";
 
-  // กำหนดฟังก์ชัน onMount ที่จะถูกเรียกเมื่อคอมโพเนนต์ถูกเมาท์
   onMount(async () => {
-    // ตรวจสอบว่าความกว้างของหน้าต่างมากกว่า 1280 และตั้งค่าตัวแปร show ตามนั้นหรือไม่
     if (window.innerWidth > 1280) {
       show = true;
     }

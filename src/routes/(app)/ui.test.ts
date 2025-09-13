@@ -1,7 +1,6 @@
-// นำเข้าฟังก์ชันและเครื่องมือที่จำเป็นสำหรับการทดสอบ
 import { render, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
-import ChatPage from './+page.svelte'; // สมมติว่าหน้าแชทหลักอยู่ที่นี่
+import ChatPage from './+page.svelte';
 import Messages from '$lib/components/chat/Messages.svelte';
 import { tick } from 'svelte';
 import { writable, get } from 'svelte/store';
@@ -9,7 +8,7 @@ import { writable, get } from 'svelte/store';
 // จำลอง (mock) svelte stores
 vi.mock('$lib/stores', async (importOriginal) => {
   const actual = await importOriginal();
-  const { writable } = await import('svelte/store'); // นำเข้า writable ภายใน async mock
+  const { writable } = await import('svelte/store');
   const dbMock = writable({
     getChatById: vi.fn(),
     createNewChat: vi.fn(),
@@ -27,7 +26,7 @@ vi.mock('$lib/stores', async (importOriginal) => {
   const chatIdMock = writable(null);
   const chatsMock = writable([]);
   return {
-    ...actual, // กระจาย actual เพื่อเก็บ exports อื่นๆ หากมี
+    ...actual,
     db: dbMock,
     settings: settingsMock,
     chatId: chatIdMock,
@@ -52,8 +51,8 @@ vi.spyOn(window, 'fetch').mockResolvedValue(new Response('{}'));
 // กลุ่มการทดสอบสำหรับการตอบสนองของ UI
 describe('UI Responsiveness Tests', () => {
   // สถานการณ์ที่ 1: การปรับขนาดหน้าจอ (จำลอง viewports ที่แตกต่างกัน)
-  it('should adjust layout for smaller screens', async () => {
-    // แสดงผล ChatPage เราต้องจำลอง (mock) การขึ้นต่อกันของมันเพื่อหลีกเลี่ยงข้อผิดพลาด
+  it('ควรปรับเค้าโครงสำหรับหน้าจอขนาดเล็ก', async () => {
+    // แสดงผล ChatPage
     render(ChatPage);
     await tick();
 
@@ -63,16 +62,10 @@ describe('UI Responsiveness Tests', () => {
     window.dispatchEvent(new Event('resize'));
     await tick();
 
-    // ตรวจสอบองค์ประกอบที่ปรับให้เข้ากับหน้าจอขนาดเล็ก (เช่น การมองเห็นของแถบด้านข้าง, ตำแหน่งของช่องป้อนข้อความ)
-    // สิ่งนี้ต้องการความรู้ว่าโค้ด CSS/Svelte ปรับตัวอย่างไร ตัวอย่างเช่น หากแถบด้านข้างซ่อนบนมือถือ:
-    // expect(screen.queryByTestId('sidebar')).not.toBeVisible(); // สมมติว่ามี data-testid บนแถบด้านข้าง
-
-    // เนื่องจากเราไม่มี ID องค์ประกอบที่ตอบสนองที่เฉพาะเจาะจง เราจะทำการยืนยันทั่วไป
-    // ว่าพื้นที่แชทหลักยังคงมองเห็นและใช้งานได้
     expect(screen.getByPlaceholderText('ส่งข้อความ')).toBeInTheDocument();
   });
 
-  it('should adjust layout for tablet screens', async () => {
+  it('ควรปรับเค้าโครงสำหรับหน้าจอแท็บเล็ต', async () => {
     render(ChatPage);
     await tick();
 
@@ -86,7 +79,7 @@ describe('UI Responsiveness Tests', () => {
   });
 
   // สถานการณ์ที่ 2: ฟังก์ชันการเลื่อนอัตโนมัติ
-  it('should auto-scroll to the bottom when new messages appear and autoScroll is true', async () => {
+  it('ควรเลื่อนอัตโนมัติไปด้านล่างเมื่อข้อความใหม่ปรากฏขึ้นและ AutoScroll เป็น true', async () => {
     const mockSendPrompt = vi.fn();
     const mockRegenerateResponse = vi.fn();
     const mockMessages = writable([
@@ -119,7 +112,7 @@ describe('UI Responsiveness Tests', () => {
     scrollToSpy.mockRestore(); // ล้าง spy
   });
 
-  it('should not auto-scroll if autoScroll is false, but allow manual scroll', async () => {
+  it('ไม่ควรเลื่อนอัตโนมัติถ้า autoscroll เป็น false แต่อนุญาตให้เลื่อนด้วยตนเอง', async () => {
     const mockSendPrompt = vi.fn();
     const mockRegenerateResponse = vi.fn();
     const mockMessages = writable([

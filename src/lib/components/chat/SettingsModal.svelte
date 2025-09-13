@@ -8,7 +8,6 @@
   // Prop สำหรับควบคุมการแสดงผลของ Modal
   export let show = false;
 
-  // ตัวแปรสำหรับเก็บ tag ของโมเดลที่จะลบ
   let deleteModelTag = "";
 
   // ฟังก์ชันสำหรับจัดการการลบโมเดล
@@ -44,9 +43,6 @@
             }
             if (data.detail) {
               throw data.detail;
-            }
-            if (data.status) {
-              // จัดการกับ status update
             }
           } else {
             toast.success(`${deleteModelTag} ถูกลบแล้ว`);

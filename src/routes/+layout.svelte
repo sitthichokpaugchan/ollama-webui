@@ -3,7 +3,6 @@
   import "../app.css";
   import "../tailwind.css";
   import "tippy.js/dist/tippy.css";
-  // นำเข้า Toaster component จาก svelte-french-toast
   import { Toaster } from "svelte-french-toast";
 </script>
 

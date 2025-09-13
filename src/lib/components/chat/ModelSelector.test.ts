@@ -1,4 +1,3 @@
-// นำเข้าฟังก์ชันและเครื่องมือที่จำเป็นสำหรับการทดสอบ
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 import ModelSelector from './ModelSelector.svelte';
@@ -36,14 +35,13 @@ vi.mock('svelte-french-toast', () => {
   };
   return {
     default: toast,
-    toast: toast // จัดเตรียมทั้งการส่งออกชื่อและการส่งออกเริ่มต้นเพื่อความยืดหยุ่น
+    toast: toast
   };
 });
 
-// กลุ่มการทดสอบสำหรับ ModelSelector
 describe('ModelSelector', () => {
   // สถานการณ์ที่ 1: การเลือกโมเดล
-  it('should render model options and allow selection', async () => {
+  it('ควรแสดงตัวเลือกโมเดลและอนุญาตให้เลือก', async () => {
     let selectedModels = [''];
     render(ModelSelector, { props: { selectedModels, disabled: false } });
 
@@ -59,14 +57,11 @@ describe('ModelSelector', () => {
     // เลือกโมเดล
     await fireEvent.change(selectElement, { target: { value: 'llama2' } });
 
-    // ตรวจสอบค่าที่เลือก (สิ่งนี้ต้องการให้คอมโพเนนต์หลักอัปเดต selectedModels)
-    // เนื่องจาก selectedModels เป็น prop เราจึงต้องตรวจสอบค่าของมันในขอบเขตการทดสอบหลังจากการเปลี่ยนแปลง
     // สำหรับการทดสอบนี้ เราจะยืนยันว่าค่าขององค์ประกอบ select เปลี่ยนแปลง
     expect(selectElement.value).toBe('llama2');
   });
 
-  // ทดสอบว่าตัวเลือกถูกปิดใช้งานเมื่อ prop `disabled` เป็น true
-  it('should disable the selector when `disabled` prop is true', () => {
+  it('ควรปิดใช้งานตัวเลือกเมื่อ `disabled` prop เป็น true', () => {
     let selectedModels = [''];
     render(ModelSelector, { props: { selectedModels, disabled: true } });
 
@@ -74,8 +69,7 @@ describe('ModelSelector', () => {
     expect(selectElement).toBeDisabled();
   });
 
-  // ทดสอบว่า modal การตั้งค่าเปิดขึ้นเมื่อคลิกปุ่ม "ดู"
-  it('should open settings modal when "ดู" button is clicked', async () => {
+  it('ควรเปิดการตั้งค่าโมเดลเมื่อคลิกปุ่ม "ดู"', async () => {
     let selectedModels = [''];
     render(ModelSelector, { props: { selectedModels, disabled: false } });
 
@@ -85,8 +79,7 @@ describe('ModelSelector', () => {
     expect(get(showSettings)).toBe(true);
   });
 
-  // ทดสอบว่าโมเดลที่เลือกถูกบันทึกเป็นค่าเริ่มต้นและแสดง toast สำเร็จ
-  it('should save the selected model as default and show a success toast', async () => {
+  it('ควรบันทึกโมเดลที่เลือกเป็นค่าเริ่มต้นและแสดง toast สำเร็จ', async () => {
     let selectedModels = ['llama2']; // จำลองโมเดลที่เลือก
     render(ModelSelector, { props: { selectedModels, disabled: false } });
 
@@ -97,9 +90,8 @@ describe('ModelSelector', () => {
     expect(toast.success).toHaveBeenCalledWith('ตั้งเป็นโมเดลเริ่มต้นแล้ว');
   });
 
-  // สถานการณ์ที่ 2: การลบโมเดล - ฟังก์ชันนี้อยู่ใน SettingsModal ไม่ใช่ ModelSelector
-  // อย่างไรก็ตาม เราสามารถทดสอบได้ว่า ModelSelector ตอบสนองอย่างถูกต้องหรือไม่หากโมเดลถูกลบออกจาก `models` store
-  it('should reflect changes in available models', async () => {
+  // สถานการณ์ที่ 2: การลบโมเดล
+  it('ควรตอบสนองอย่างถูกต้องหากโมเดลถูกลบออกจาก models store', async () => {
     let selectedModels = ['llama2'];
     const { rerender } = render(ModelSelector, { props: { selectedModels, disabled: false } });
 
@@ -115,7 +107,7 @@ describe('ModelSelector', () => {
     // คอมโพเนนต์ Svelte ตอบสนองต่อการเปลี่ยนแปลง store โดยอัตโนมัติ เราใช้ waitFor เพื่อให้แน่ใจว่า DOM อัปเดต
     await screen.findByText('mistral'); // รอให้ mistral ปรากฏ
 
-    // llama2 ไม่ควรอยู่ในเอกสารอีกต่อไป
+    // llama2 ไม่ควรมีอยู่
     expect(screen.queryByRole('option', { name: 'llama2' })).not.toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'mistral' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'codellama' })).toBeInTheDocument();

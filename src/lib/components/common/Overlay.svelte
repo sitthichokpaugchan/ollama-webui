@@ -1,10 +1,10 @@
 <script>
   /**
-   * คอมโพเนนต์ที่แสดง spinner โหลดและข้อความเสริม
-   * ทับซ้อนบนเนื้อหาของ slot เมื่อ property `show` เป็น true
+   * คอมโพเนนต์ที่แสดง spinner โหลดข้อความ
+   * บนเนื้อหาของ slot เมื่อ property `show` เป็น true
    *
    * @property {boolean} show - จะแสดง overlay หรือไม่
-   * @property {string} content - ข้อความเสริมที่จะแสดงถัดจาก spinner
+   * @property {string} content - ข้อความที่จะแสดงถัดจาก spinner
    * @property {number} opacity - ความทึบของพื้นหลัง overlay (ค่าเริ่มต้น: 1)
    */
   import Spinner from "./Spinner.svelte";
@@ -24,7 +24,7 @@
         style="inset: -10px; opacity: {opacity}; backdrop-filter: blur(5px);"
       />
 
-      <!-- spinner และข้อความเสริม -->
+      <!-- spinner และข้อความ -->
       <div class="flex w-full flex-col justify-center">
         <div class="py-3">
           <Spinner className="ml-2" />

@@ -3,8 +3,7 @@ import { splitStream } from './index';
 
 // กลุ่มการทดสอบสำหรับฟังก์ชัน splitStream
 describe('splitStream', () => {
-  // ทดสอบว่าสตรีมถูกแบ่งตามตัวคั่นที่กำหนดอย่างถูกต้องหรือไม่
-  it('should split a stream by a given delimiter', async () => {
+  it('ควรแยกสตรีมตามตัวคั่นที่กำหนด', async () => {
     const stream = new ReadableStream({
       start(controller) {
         controller.enqueue('hello\nworld\n');
@@ -28,8 +27,7 @@ describe('splitStream', () => {
     expect(result3.done).toBe(true);
   });
 
-  // ทดสอบการจัดการกับส่วนของข้อมูล (chunks) ที่ไม่ได้ลงท้ายด้วยตัวคั่น
-  it('should handle chunks that do not end with a delimiter', async () => {
+  it('ควรจัดการกับส่วนที่ไม่ได้จบลงด้วยตัวคั่น', async () => {
     const stream = new ReadableStream({
       start(controller) {
         controller.enqueue('part1');
@@ -55,8 +53,7 @@ describe('splitStream', () => {
     expect(result3.done).toBe(true);
   });
 
-  // ทดสอบการจัดการกับสตรีมที่ว่างเปล่า
-  it('should handle empty stream', async () => {
+  it('ควรจัดการสตรีมที่ว่าง', async () => {
     const stream = new ReadableStream({
       start(controller) {
         controller.close();
@@ -71,8 +68,7 @@ describe('splitStream', () => {
     expect(result.done).toBe(true);
   });
 
-  // ทดสอบการจัดการกับสตรีมที่มีเพียงตัวคั่น
-  it('should handle stream with only delimiter', async () => {
+  it('ควรจัดการสตรีมที่มีเพียงตัวคั่น', async () => {
     const stream = new ReadableStream({
       start(controller) {
         controller.enqueue('\n');

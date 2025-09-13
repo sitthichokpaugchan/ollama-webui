@@ -4,7 +4,7 @@
 
   import { OLLAMA_API_BASE_URL } from "$lib/constants";
   import { onMount, tick } from "svelte";
-  import { splitStream } from "$lib/utils";
+  import { copyToClipboard, splitStream } from "$lib/utils";
 
   import { settings, db, chats, chatId } from "$lib/stores";
 
@@ -14,7 +14,6 @@
   import Navbar from "$lib/components/layout/Navbar.svelte";
   import { page } from "$app/stores";
 
-  // ตัวแปรสำหรับควบคุมการทำงานของแชท
   let stopResponseFlag = false;
   let autoScroll = true;
 
@@ -46,7 +45,6 @@
     messages = [];
   }
 
-  // เมื่อคอมโพเนนต์ถูก mount
   onMount(async () => {
     await chatId.set(uuidv4());
 
@@ -78,41 +76,6 @@
     settings.set({
       ..._settings,
     });
-  };
-
-  // คัดลอกข้อความไปยังคลิปบอร์ด
-  const copyToClipboard = (text) => {
-    if (!navigator.clipboard) {
-      var textArea = document.createElement("textarea");
-      textArea.value = text;
-
-      textArea.style.top = "0";
-      textArea.style.left = "0";
-      textArea.style.position = "fixed";
-
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        var successful = document.execCommand("copy");
-        var msg = successful ? "ประสบความสำเร็จ": "ไม่สำเร็จ";
-        console.log("การคัดลอก" + msg);
-      } catch (err) {
-        console.error("ไม่สามารถคัดลอกได้", err);
-      }
-
-      document.body.removeChild(textArea);
-      return;
-    }
-    navigator.clipboard.writeText(text).then(
-      function () {
-        console.log("คัดลอกไปยังคลิปบอร์ดแล้ว");
-      },
-      function (err) {
-        console.error("ไม่สามารถคัดลอกข้อความ: ", err);
-      }
-    );
   };
 
   // ฟังก์ชันเกี่ยวกับ Ollama

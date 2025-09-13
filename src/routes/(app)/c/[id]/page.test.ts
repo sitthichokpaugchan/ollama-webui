@@ -1,4 +1,3 @@
-// นำเข้าฟังก์ชันและเครื่องมือที่จำเป็นสำหรับการทดสอบ
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 import Page from './+page.svelte';
@@ -6,7 +5,7 @@ import { db, chatId, chats } from '$lib/stores';
 import { tick } from 'svelte';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
-import { page } from '$app/stores'; // นำเข้า page store
+import { page } from '$app/stores';
 
 // จำลอง (mock) svelte stores
 vi.mock('$lib/stores', async (importOriginal) => {
@@ -38,7 +37,7 @@ vi.mock('$lib/stores', async (importOriginal) => {
     settings: settingsMock,
     chatId: chatIdMock,
     chats: chatsMock,
-    models: modelsMock, // เพิ่มส่วนนี้
+    models: modelsMock,
   };
 });
 
@@ -60,12 +59,12 @@ vi.mock('$app/stores', async (importOriginal) => {
 
 // จำลอง (mock) svelte-french-toast
 vi.mock('svelte-french-toast', () => ({
-  default: { // สมมติว่าอ็อบเจ็กต์ 'toast' เป็นการส่งออกเริ่มต้น
+  default: {
     error: vi.fn(),
-    success: vi.fn(), // เพิ่มเมธอดอื่น ๆ หากใช้ในแอป
+    success: vi.fn(),
     loading: vi.fn(),
   },
-  toast: { // จัดเตรียมเป็น named export เพื่อความทนทาน หากใช้ทั้งสองวิธี
+  toast: {
     error: vi.fn(),
     success: vi.fn(),
     loading: vi.fn(),
@@ -75,31 +74,27 @@ vi.mock('svelte-french-toast', () => ({
 describe('+page.svelte - Chat History Management', () => {
   let fetchSpy; // ประกาศ fetchSpy นอก beforeEach เพื่อให้สามารถเข้าถึงได้ในการทดสอบ
 
-  beforeEach(async () => { // ทำให้ beforeEach เป็นฟังก์ชัน async
+  beforeEach(async () => {
     vi.clearAllMocks();
-    chatId.set(null); // รีเซ็ต chatId store
+    chatId.set(null);
     // ตั้งค่าเริ่มต้นสำหรับ page store ก่อนการทดสอบแต่ละครั้ง
     await tick(); // ตรวจสอบให้แน่ใจว่า reactivity ก่อนหน้าเสร็จสิ้น
-    await tick();
-    await tick();
-    await tick();
-    await tick();
     page.set({ params: { id: 'test-chat-id' } });
 
-    // จำลอง (mock) fetch เพื่อส่งคืนการตอบสนอง JSON ทั่วไปโดยค่าเริ่มต้น
+    // จำลอง (mock) fetch ของ generateChatTitle เพื่อส่งคืน JSON โดยค่าเริ่มต้น
     fetchSpy = vi.spyOn(window, 'fetch').mockResolvedValue(new Response(JSON.stringify({ response: "mocked title" }), {
       headers: { 'Content-Type': 'application/json' }
     }));
   });
 
   // สถานการณ์ที่ 1: การสร้างและบันทึกแชทใหม่
-  it('should create a new chat and save it to IndexedDB when the first message is sent', async () => {
+  it('ควรสร้างแชทใหม่และบันทึกลงใน indexedDB เมื่อส่งข้อความแรก', async () => {
     const mockChatId = 'new-chat-id';
-    chatId.set(mockChatId); // ตั้งค่า chatId อย่างชัดเจน
+    chatId.set(mockChatId); // ตั้งค่า chatId
     await tick(); // ตรวจสอบให้แน่ใจว่าการอัปเดต chatId เสร็จสิ้น
     page.set({ params: { id: mockChatId } }); // ตั้งค่า ID ของหน้าเป็น ID ใหม่
 
-    get(db).getChatById.mockResolvedValueOnce({ // ส่งคืนอ็อบเจ็กต์แชทที่ว่างเปล่าเพื่อให้สามารถแสดงผลได้
+    get(db).getChatById.mockResolvedValueOnce({ // ส่งอ็อบเจ็กต์แชทที่ว่างเพื่อให้สามารถแสดงผลได้
       id: mockChatId,
       title: '',
       models: [''],
@@ -112,8 +107,6 @@ describe('+page.svelte - Chat History Management', () => {
 
     render(Page);
     await tick(); // รอการโหลดเริ่มต้น
-    await tick(); // tick เพิ่มเติมเพื่อให้แน่ใจว่า reactivity เสร็จสิ้น
-    await tick(); // tick ที่สามสำหรับ deep reactivity
 
     // เลือกโมเดลเพื่อเปิดใช้งานการส่งแชท
     const modelSelector = await screen.findByRole('combobox');
@@ -125,13 +118,14 @@ describe('+page.svelte - Chat History Management', () => {
 
     await fireEvent.input(messageInput, { target: { value: 'Test Prompt' } });
     await fireEvent.click(sendButton);
+    await new Promise(resolve => setTimeout(resolve, 100)); // เพิ่ม delay เพื่อให้เวลาสำหรับ async operations
 
     expect(get(db).createNewChat).toHaveBeenCalledWith(
       expect.objectContaining({
         id: mockChatId,
         title: 'ไม่มีชื่อแชท', // ชื่อเรื่องเริ่มต้นก่อนการสร้างอัตโนมัติ
-        models: ['llama2'], // ตอนนี้คาดหวัง 'llama2'
-        messages: expect.arrayContaining([ // คาดหวังอาร์เรย์ที่มีอย่างน้อยข้อความของผู้ใช้
+        models: ['llama2'],
+        messages: expect.arrayContaining([
           expect.objectContaining({
             role: 'user',
             content: 'Test Prompt',
@@ -152,30 +146,15 @@ describe('+page.svelte - Chat History Management', () => {
     );
 
     // จำลองการเสร็จสิ้นการตอบสนองสำหรับการสร้างชื่อเรื่อง
-    await tick();
     await tick(); // ให้เวลาสำหรับ fetch ที่จำลอง (mock) เพื่อให้เสร็จสมบูรณ์และมีการอัปเดตเกิดขึ้น
-    await tick();
-    await tick();
-    await tick();
-    await tick();
-    await tick();
-    await tick();
-    // จำลองการเสร็จสิ้นการตอบสนองสำหรับการสร้างชื่อเรื่อง
-    await tick();
-    await tick(); // ให้เวลาสำหรับ fetch ที่จำลอง (mock) เพื่อให้เสร็จสมบูรณ์และมีการอัปเดตเกิดขึ้น
-    await tick();
-    await tick();
-    await tick();
-    await tick();
-    await tick();
-    await tick();
+    await tick(); // เพิ่ม tick เพื่อให้ Svelte re-render หลังจาก mock fetch
 
     // คาดหวังว่า updateChatById จะถูกเรียกหนึ่งครั้งสำหรับการอัปเดตข้อความ
     expect(get(db).updateChatById).toHaveBeenCalledTimes(1);
     expect(get(db).updateChatById).toHaveBeenCalledWith(
       mockChatId,
       expect.objectContaining({
-        title: 'ไม่มีชื่อแชท', // ชื่อเรื่องเริ่มต้น เนื่องจากการทดสอบการสร้างอัตโนมัติถูกลบออก
+        title: 'ไม่มีชื่อแชท', // ชื่อเรื่องเริ่มต้น
         messages: expect.any(Array),
         history: expect.any(Object),
       })
@@ -183,7 +162,7 @@ describe('+page.svelte - Chat History Management', () => {
   });
 
   // สถานการณ์ที่ 2: การโหลดแชทเก่า
-  it('should load an old chat from IndexedDB and display its messages', async () => {
+  it('ควรโหลดแชทเก่าจาก indexedDB และแสดงข้อความ', async () => {
     const existingChatId = 'existing-chat-id';
     const mockMessages = [
       { id: 'msg1', parentId: null, role: 'user', content: 'Hello', childrenIds: ['msg2'] },
@@ -206,15 +185,13 @@ describe('+page.svelte - Chat History Management', () => {
 
     get(db).getChatById.mockResolvedValueOnce(mockChat);
     chats.set([mockChat]); // อัปเดต chats store ด้วย mock chat
-    // fetchSpy ถูกตั้งค่าไว้แล้วใน beforeEach มันจะจำลอง (mock) การเรียก fetch ของ generateChatTitle
+    // fetchSpy ถูกตั้งค่าไว้แล้วใน beforeEach
 
-    chatId.set(existingChatId); // ตั้งค่า chatId อย่างชัดเจน
+    chatId.set(existingChatId); // ตั้งค่า chatId
     await tick(); // ตรวจสอบให้แน่ใจว่าการอัปเดต chatId เสร็จสิ้น
     page.set({ params: { id: existingChatId } }); // ตั้งค่า ID ของหน้าเป็น ID ที่มีอยู่
     render(Page);
     await tick(); // รอการโหลดเริ่มต้นและการโหลดแชท
-    await tick(); // tick เพิ่มเติมเพื่อให้แน่ใจว่า reactivity เสร็จสิ้น
-    await tick(); // tick ที่สามสำหรับ deep reactivity
 
     expect(get(db).getChatById).toHaveBeenCalledWith(existingChatId);
     expect(await screen.findByText('Hello')).not.toBeNull();
@@ -223,7 +200,7 @@ describe('+page.svelte - Chat History Management', () => {
   });
 
   // สถานการณ์ที่ 3: การแก้ไขชื่อแชท
-  it('should update the chat title when setChatTitle is called', async () => {
+  it('ควรอัปเดตชื่อการแชทเมื่อเรียก setChatTitle', async () => {
     const existingChatId = 'existing-chat-id-for-rename';
     const mockChat = {
       id: existingChatId,
@@ -237,63 +214,34 @@ describe('+page.svelte - Chat History Management', () => {
     get(db).updateChatById.mockResolvedValueOnce(undefined);
     // fetchSpy ถูกตั้งค่าไว้แล้วใน beforeEach
 
-    chatId.set(existingChatId); // ตั้งค่า chatId อย่างชัดเจน
+    chatId.set(existingChatId); // ตั้งค่า chatId
     await tick(); // ตรวจสอบให้แน่ใจว่าการอัปเดต chatId เสร็จสิ้น
     page.set({ params: { id: existingChatId } });
     const { component } = render(Page);
     await tick();
-    await tick(); // tick เพิ่มเติมเพื่อให้แน่ใจว่า reactivity เสร็จสิ้น
-    await tick(); // tick ที่สามสำหรับ deep reactivity
 
-    // เรียกฟังก์ชัน setChatTitle โดยตรง (หรือจำลองการทริกเกอร์)
-    // สำหรับการทดสอบ เราสามารถเปิดเผยมันหรือแสดงผลใหม่ด้วย prop ใหม่หากเป็นคอมโพเนนต์ลูก
-    // เนื่องจากเป็นฟังก์ชันระดับหน้า เราจะจำลองผลกระทบของมันต่อ store และตรวจสอบการแสดงผล
-    // ในสถานการณ์จริง สิ่งนี้จะถูกทริกเกอร์โดยเหตุการณ์ใน Navbar หรือคล้ายกัน
-    // สำหรับตอนนี้ เราจะทดสอบการเรียก `updateChatById` และการอัปเดตชื่อเรื่อง
-
-    // จำลองการอัปเดตชื่อเรื่องจาก Navbar หรือแหล่งอื่น
+    // จำลองการอัปเดตชื่อเรื่อง
     await component.$set({ title: 'New Chat Title' });
-    // นี่ไม่ใช่วิธีการทำงานของ setChatTitle มันเป็นฟังก์ชันภายใน
-    // เราต้องทริกเกอร์ฟังก์ชันจริงที่อัปเดตชื่อเรื่อง
-    // ฟังก์ชัน `generateChatTitle` และ `setChatTitle` เป็นฟังก์ชันภายในของหน้า
-    // วิธีที่ง่ายที่สุดในการทดสอบ `setChatTitle` คือการตรวจสอบว่า `db.updateChatById` ถูกเรียกหรือไม่
 
-    // ในการทดสอบ setChatTitle โดยตรง เราต้องจำลอง (mock) การขึ้นต่อกันของมันและเรียกมัน
-    // เนื่องจากมันไม่ได้เปิดเผยโดยตรงต่อ DOM สำหรับการโต้ตอบของผู้ใช้
-    // เราจะพึ่งพาการทดสอบฟังก์ชันที่ *เรียก* setChatTitle
-    // สำหรับตอนนี้ เราจะทดสอบผลกระทบต่อ `db.updateChatById`
-
-    // สมมติว่ามีกลไกในการทริกเกอร์การเปลี่ยนแปลงชื่อเรื่อง (เช่น ผ่านเหตุการณ์ของคอมโพเนนต์ Navbar)
-    // สำหรับการทดสอบนี้ เราจะเรียก updateChatById ด้วยตนเองเพื่อจำลองผลกระทบ
+    // เรียก updateChatById
     await get(db).updateChatById(existingChatId, { title: 'Updated Chat Title' });
     expect(get(db).updateChatById).toHaveBeenCalledWith(existingChatId, { title: 'Updated Chat Title' });
-
-    // ตรวจสอบว่าชื่อเรื่องที่แสดงบนหน้าอัปเดตหรือไม่ (ต้องมีการแสดงผลใหม่หรือ prop ที่ reactive)
-    // เนื่องจาก title เป็น prop ใน Navbar เราจะต้องจำลอง (mock) Navbar และตรวจสอบ props ของมัน
-    // หรือตรวจสอบให้แน่ใจว่าคอมโพเนนต์แสดงผลใหม่ด้วยชื่อเรื่องใหม่
-    // เพื่อความเรียบง่าย เราจะตรวจสอบการเรียก db
   });
 
   // สถานการณ์ที่ 4: การลบแชท
-  it('should navigate to home if the chat ID does not exist', async () => {
+  it('ควรไปที่หน้าแรกหากไม่มีแชท', async () => {
     const nonExistentChatId = 'non-existent-chat-id';
 
     get(db).getChatById.mockResolvedValueOnce(null); // จำลอง (mock) ว่าไม่พบแชท
     // fetchSpy ถูกตั้งค่าไว้แล้วใน beforeEach
 
-    chatId.set(nonExistentChatId); // ตั้งค่า chatId อย่างชัดเจน
+    chatId.set(nonExistentChatId); // ตั้งค่า chatId
     await tick(); // ตรวจสอบให้แน่ใจว่าการอัปเดต chatId เสร็จสิ้น
     page.set({ params: { id: nonExistentChatId } });
     await tick(); // ตรวจสอบให้แน่ใจว่าการอัปเดต page store เสร็จสิ้น
-    render(Page);
-    await tick(); // การแสดงผลเริ่มต้น
-    await tick(); // อนุญาตให้ onMount เสร็จสมบูรณ์
-    await tick(); // tick เพิ่มเติมสำหรับ reactivity
-    await tick(); // tick เพิ่มเติมเพื่อให้แน่ใจว่าการดำเนินการแบบอะซิงโครนัสทั้งหมดเสร็จสมบูรณ์
-    await tick();
-    await tick();
-    await tick();
-    await tick();
+    await render(Page); // เพิ่ม await หน้า render
+    await tick(); // ตรวจสอบให้แน่ใจว่าการแสดงผลเริ่มต้นเสร็จสิ้น
+    await new Promise(resolve => setTimeout(resolve, 0)); // รอให้ microtasks ทั้งหมดทำงาน
 
     expect(goto).toHaveBeenCalledWith('/'); // ควรนำทางไปที่หน้าแรก
   });
