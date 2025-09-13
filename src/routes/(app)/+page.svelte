@@ -329,7 +329,7 @@
         },
         body: JSON.stringify({
           model: selectedModels[0],
-          prompt: `Generate a brief 3-5 word title for this question, excluding the term 'title.' Then, please reply with only the title: ${userPrompt}`,
+          prompt: `สร้างหัวข้อแชทตรงตามภาษาเขา ไม่เกิน 10 คำ และไม่รวมคำนำหน้า จากนั้นโปรดตอบกลับโดยใช้หัวข้อแชทเท่านั้น: ${userPrompt}`,
           stream: false,
         }),
       })
