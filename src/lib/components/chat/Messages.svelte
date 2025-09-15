@@ -16,7 +16,7 @@
   export let history = {};
   export let messages = [];
 
-  // เมื่อมีข้อความใหม่และข้อความล่าสุดเสร็จสิ้นแล้ว ให้เรนเดอร์ LaTeX, ไฮไลท์โค้ด และสร้างปุ่มคัดลอกโค้ด
+  // เมื่อได้ข้อความครบแล้ว ให้เรนเดอร์ LaTeX, ไฮไลท์โค้ด และสร้างปุ่มคัดลอกโค้ด
   $: if (messages && messages.length > 0 && (messages.at(-1).done ?? false)) {
     (async () => {
       await tick();
