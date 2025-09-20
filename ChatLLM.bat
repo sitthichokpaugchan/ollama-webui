@@ -1,2 +1,2 @@
 ollama list
-npm run dev
+serve ./build
