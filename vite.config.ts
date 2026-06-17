@@ -5,7 +5,11 @@ import { defineConfig, mergeConfig } from "vite";
 const config = {
 	plugins: [sveltekit()],
 	server: {
-		cors: true
+		cors: true,
+		allowedHosts: true
+	},
+	preview: {
+		allowedHosts: true
 	}
 };
 
