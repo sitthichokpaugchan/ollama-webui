@@ -4,14 +4,12 @@
   import { onMount, tick } from "svelte";
   import { goto } from "$app/navigation";
   import {
-    showSettings,
     settings,
     models,
     db,
     chats,
     chatId,
   } from "$lib/stores";
-  import SettingsModal from "$lib/components/chat/SettingsModal.svelte";
   import Sidebar from "$lib/components/layout/Sidebar.svelte";
   import toast from "svelte-french-toast";
   import { OLLAMA_API_BASE_URL } from "$lib/constants";
@@ -128,8 +126,6 @@
   >
     <!-- แสดง Sidebar -->
     <Sidebar />
-    <!-- แสดง Modal การตั้งค่า -->
-    <SettingsModal bind:show={$showSettings} />
     <!-- แสดงเนื้อหาของหน้า -->
     <slot />
   </div>

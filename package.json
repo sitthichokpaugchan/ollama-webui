@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev --host --port 3000",
 		"build": "vite build",
+		"start": "vite preview --host --port 3000",
 		"fmt": "npm run prettier:svelte && npm run prettier",
 		"prettier:svelte": "npx -p prettier@2 -- prettier --plugin-search-dir . --write .",
 		"prettier": "npx -p prettier@2 -- prettier --write '**/*.{js,css,md,html,json}'",

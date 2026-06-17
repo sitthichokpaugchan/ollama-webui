@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
 import ModelSelector from './ModelSelector.svelte';
-import { models, settings, showSettings } from '$lib/stores';
+import { models, settings } from '$lib/stores';
 import { get } from 'svelte/store';
 import toast from 'svelte-french-toast';
 
@@ -23,7 +23,6 @@ vi.mock('$lib/stores', () => {
       titleAutoGenerate: true,
       models: [], // การตั้งค่าโมเดลเริ่มต้น
     }),
-    showSettings: writable(false),
   };
 });
 
@@ -69,15 +68,7 @@ describe('ModelSelector', () => {
     expect(selectElement).toBeDisabled();
   });
 
-  it('ควรเปิดการตั้งค่าโมเดลเมื่อคลิกปุ่ม "ดู"', async () => {
-    let selectedModels = [''];
-    render(ModelSelector, { props: { selectedModels, disabled: false } });
 
-    const viewButton = screen.getByRole('button', { name: 'ดู' });
-    await fireEvent.click(viewButton);
-
-    expect(get(showSettings)).toBe(true);
-  });
 
   it('ควรบันทึกโมเดลที่เลือกเป็นค่าเริ่มต้นและแสดง toast สำเร็จ', async () => {
     let selectedModels = ['llama2']; // จำลองโมเดลที่เลือก

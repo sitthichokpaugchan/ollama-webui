@@ -14,6 +14,5 @@ export interface ChatDatabase {
 export const db: Writable<ChatDatabase | undefined> = writable(undefined);
 export const chatId: Writable<string> = writable("");
 export const chats: Writable<Chat[]> = writable([]);
-export const models = writable([]);
-export const settings = writable({});
-export const showSettings = writable(false);
+export const models: Writable<any[]> = writable([]);
+export const settings: Writable<any> = writable({});

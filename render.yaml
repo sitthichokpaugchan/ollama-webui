@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ollama-webui
+    runtime: static
+    buildCommand: pnpm install && pnpm build
+    staticPublishPath: build
+    envVars:
+      - key: PUBLIC_OLLAMA_API_BASE_URL
+        value: "https://63c4-2403-6200-88a0-b2ac-80fb-66b1-8fdc-216c.ngrok-free.app/api"
+    routes:
+      # Support client-side routing for SvelteKit SPA (fallback to index.html)
+      - type: rewrite
+        source: /*
+        destination: /index.html

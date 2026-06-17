@@ -1,2 +1,2 @@
 ollama list
-serve ./build
+http-server ./build --cors

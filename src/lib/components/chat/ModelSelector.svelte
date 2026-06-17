@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { models, showSettings, settings } from "$lib/stores";
+  import { models, settings } from "$lib/stores";
   import toast from "svelte-french-toast";
 
   export let selectedModels = [""];
@@ -37,16 +37,6 @@
           {/if}
         {/each}
       </select>
-
-      <!-- ปุ่มสำหรับเปิดหน้าต่างการตั้งค่า -->
-      <button
-        class=" self-center hover:text-gray-700"
-        on:click={async () => {
-          await showSettings.set(true);
-        }}
-      >
-        ดู
-      </button>
     </div>
   {/each}
 </div>

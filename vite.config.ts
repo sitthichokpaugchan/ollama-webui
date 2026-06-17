@@ -3,7 +3,10 @@ import { defineConfig, mergeConfig } from "vite";
 
 // การตั้งค่าพื้นฐานสำหรับ Vite
 const config = {
-	plugins: [sveltekit()]
+	plugins: [sveltekit()],
+	server: {
+		cors: true
+	}
 };
 
 // ส่งออกการตั้งค่า Vite โดยรวมการตั้งค่าพื้นฐานเข้ากับการตั้งค่าสำหรับการทดสอบ
